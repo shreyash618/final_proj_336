@@ -3,83 +3,7 @@
 <%@ page import="java.io.*,java.util.*,java.sql.*"%>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 
-<%
-
-    // Java logic activates once the user clicks the login button
-    try{
-
-        HttpSession session = request.getSession(); //create a session object
-        
-        //Check if the user is already logged in
-        if (session.getAttribute("username") != null) {
-            response.sendRedirect ("welcome.jsp"); //Redirect to welcome page if already logged in
-            return;
-        }
-
-        String errorMessage = null;
-        String successMessage = null;
-
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
-
-            // Check if the username and password exist in the database
-            if (username != null && password != null){
-
-                //Get the database connection
-                ApplicationDB db = new ApplicationDB();	
-                Connection con = db.getConnection();
-
-                String query = "Select * from user WHERE username = ? AND pwd = ?";
-                PreparedStatement ps = con.prepareStatement(query);
-
-                ps.setString(1, username);
-                ps.setString(2, password);
-                ResultSet rs = ps.executeQuery();
-
-                if (rs.next()){
-                    session.setAttribute ("username", username);
-                    session.setAttribute ("password", password);
-                    session.setAttribute ("firstName", rs.getString ("firstName"));
-                    session.setAttribute ("lastName", rs.getString ("lastName"));
-                    
-                    rs.close();
-                    ps.close();
-                    db.closeConnection(con);
-                    
-                    successMessage = "Login successful! Redirecting...";
-        %>
-            <p style="color:green;"> <%= successMessage %> </p>
-            <div id="spinner" class="spinner"></div>
-            <script>
-              setTimeout(function() {
-                window.location.href = 'welcome.jsp';
-              }, 1500);
-            </script>
-        <%
-
-                    return;
-
-                }
-                else{
-                    errorMessage = "Invalid username or password";
-        %>
-            <p style="color:red;"><%= errorMessage %></p>
-        <%
-                }
-                rs.close()
-                ps.close();
-                db.closeConnection(con);
-                con = null;
-                return;
-            }
-    }   catch (Exception e) {
-    out.println(e);
-    out.println ("Connection failed");
-    }
-%>
-
-
-//HTML Code down below written by Virali ->
+<!---HTML Code down below written by Virali --->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,11 +60,25 @@
   <!-- Login Form -->
   <div class="form-container fade-in" id="login-form">
     <h1>Baes Couture Login</h1>
-    <form action="login.jsp" method="post">
+    <form action="login" method="post">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>
         <button type="submit">Login</button>
       </form>
+
+        <% if (request.getAttribute("successMessage") != null) { %>
+            <p style="color:green;"><%= request.getAttribute("successMessage") %></p>
+            <div id="spinner" class="spinner"></div>
+            <script>
+            setTimeout(function() {
+                window.location.href = 'welcome.jsp';
+            }, 1500);
+            </script>
+        <% } 
+        else if (request.getAttribute("errorMessage") != null) { %>
+            <p style="color:red;"><%= request.getAttribute("errorMessage") %></p>
+        <% } %>
+    
     <div class="toggle" id="go-register">Don't have an account? Register</div>
   </div>
 
@@ -158,10 +96,9 @@
   <div class="form-container hidden" id="logout-page">
     <h1>Welcome to Baes Couture!</h1>
     <p>You are successfully logged in.</p>
-    <button id="logout-btn">Logout</button>
+    <button id="logout-btn" onclick="window.location.href ='logout.jsp'">Logout</button>
   </div>
 </div>
-//From here I wrote my own HTML code
 
 </body>
 </html>

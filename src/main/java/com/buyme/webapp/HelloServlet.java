@@ -1,4 +1,4 @@
-package com.buyme;
+package com.buyme.webapp;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
