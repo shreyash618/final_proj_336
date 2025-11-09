@@ -177,17 +177,9 @@
             <p class="subtitle">Fashion Forward</p>
             <p class="description">
                 <% 
-                    HttpSession session = request.getSession(false);
-                    if (session != null && session.getAttribute("firstName") != null) {
-                        String firstName = (String) session.getAttribute("firstName");
-                        out.println("Hello, " + firstName + "! Discover our latest collection of elegant fashion pieces. " +
-                                   "From timeless classics to modern trends, Baes Couture offers the perfect style for every occasion. " +
-                                   "Explore our curated selection and find your next favorite piece.");
-                    } else {
                         out.println("Discover our latest collection of elegant fashion pieces. " +
                                    "From timeless classics to modern trends, Baes Couture offers the perfect style for every occasion. " +
                                    "Explore our curated selection and find your next favorite piece.");
-                    }
                 %>
             </p>
         </div>
