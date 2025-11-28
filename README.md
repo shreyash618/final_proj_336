@@ -1,10 +1,10 @@
-# BaesCouture - Final Project 336
+# Tech Barn - Final Project 336
 
-A Java web application built with Apache Tomcat, Java Servlets, JSP, and MySQL. This is an e-commerce platform that supports user authentication with buyer and seller functionality.
+A Java web application built with Apache Tomcat, Java Servlets, JSP, and MySQL. This is a technology marketplace platform that supports user authentication with buyer and seller functionality.
 
 ## 🚀 Project Overview
 
-BaesCouture is a web application that provides a platform for users to buy and sell fashion items. The application features user authentication, session management, and database integration with MySQL.
+Tech Barn is a web application that provides a platform for users to buy and sell consumer electronics. The application features user authentication, session management, and database integration with MySQL.
 
 ## 📋 Technologies Used
 
@@ -23,7 +23,7 @@ final_proj_336/
 │   └── main/
 │       ├── java/
 │       │   └── com/
-│       │       └── buyme/
+│       │       └── techbarn/
 │       │           └── webapp/
 │       │               ├── ApplicationDB.java      # Database connection handler
 │       │               ├── HelloServlet.java       # Hello servlet example
@@ -76,24 +76,24 @@ cd final_proj_336
 
 1. **Create the MySQL database:**
    ```sql
-   CREATE DATABASE BaesCouture;
-   USE BaesCouture;
+   CREATE DATABASE tech_barn;
+   USE tech_barn;
    ```
 
 2. **Run the schema file:**
    ```bash
-   mysql -u root -p BaesCouture < sql/schema.sql
+   mysql -u root -p tech_barn < sql/schema.sql
    ```
 
 3. **Seed the database (optional):**
    ```bash
-   mysql -u root -p BaesCouture < sql/seed.sql
+   mysql -u root -p tech_barn < sql/seed.sql
    ```
 
 4. **Update database credentials:**
-   Edit `src/main/java/com/buyme/webapp/ApplicationDB.java` and update the connection details:
+   Edit `src/main/java/com/techbarn/webapp/ApplicationDB.java` and update the connection details:
    ```java
-   String connectionUrl = "jdbc:mysql://localhost:3306/BaesCouture"
+   String connectionUrl = "jdbc:mysql://localhost:3306/tech_barn"
        + "?useUnicode=true"
        + "&useSSL=false";
    connection = DriverManager.getConnection(connectionUrl, "root", "your_password");
@@ -143,7 +143,7 @@ Once Tomcat is running, access the application at:
 ## 🔐 Default Database Configuration
 
 The application is configured to connect to:
-- **Database**: `BaesCouture`
+- **Database**: `tech_barn`
 - **Host**: `localhost:3306`
 - **Username**: `root`
 - **Password**: `password123`
@@ -162,7 +162,7 @@ The application is configured to connect to:
 
 ### Database Connection
 
-Edit `src/main/java/com/buyme/webapp/ApplicationDB.java` to modify:
+Edit `src/main/java/com/techbarn/webapp/ApplicationDB.java` to modify:
 - Database name
 - Connection URL
 - Username and password
@@ -200,7 +200,7 @@ The main `user` table includes:
 
 1. **Test Database Connection:**
    ```bash
-   java -cp "target/classes:src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.49-bin.jar" com.buyme.webapp.ApplicationDB
+   java -cp "target/classes:src/main/webapp/WEB-INF/lib/mysql-connector-java-5.1.49-bin.jar" com.techbarn.webapp.ApplicationDB
    ```
 
 2. **Test Login:**
@@ -214,7 +214,7 @@ The main `user` table includes:
 1. **Database Connection Failed**
    - Verify MySQL is running
    - Check database credentials in `ApplicationDB.java`
-   - Ensure the database `BaesCouture` exists
+   - Ensure the database `tech_barn` exists
 
 2. **ClassNotFoundException for MySQL Driver**
    - Verify `mysql-connector-java-5.1.49-bin.jar` is in `WEB-INF/lib/`

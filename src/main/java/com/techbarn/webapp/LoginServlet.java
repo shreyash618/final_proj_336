@@ -1,4 +1,4 @@
-package com.buyme.webapp;
+package com.techbarn.webapp;
 
 import java.io.IOException;
 import java.sql.*;
@@ -43,7 +43,7 @@ public class LoginServlet extends HttpServlet {
                     ApplicationDB db = new ApplicationDB();	
                     Connection con = db.getConnection();
 
-                    String query = "Select * from user WHERE username = ? AND pwd = ?";
+                    String query = "Select * from user WHERE username = ? AND password = ?";
                     PreparedStatement ps = con.prepareStatement(query);
 
                     ps.setString(1, username);

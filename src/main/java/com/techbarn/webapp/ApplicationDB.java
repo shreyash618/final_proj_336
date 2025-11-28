@@ -1,4 +1,4 @@
-package com.buyme.webapp;
+package com.techbarn.webapp;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,7 +13,7 @@ public class ApplicationDB {
 	public Connection getConnection() throws SQLException {
 		
 		//Create a connection string with proper encoding
-		String connectionUrl = "jdbc:mysql://localhost:3306/BaesCouture"
+		String connectionUrl = "jdbc:mysql://localhost:3306/tech_barn"
 				+ "?useUnicode=true"
 				+ "&useSSL=false";
 		Connection connection = null;

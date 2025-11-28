@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8" import="com.buyme.webapp.*"%>
+    pageEncoding="UTF-8" import="com.techbarn.webapp.*"%>
 <%@ page import="java.io.*,java.util.*,java.sql.*"%>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
 
@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baes Couture - Home</title>
+    <title>Tech Barn - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { 
@@ -163,7 +163,7 @@
 <body>
     <!-- Header with Company Name and Logout Button -->
     <header class="header">
-        <a href="welcome.jsp" class="company-name">Baes Couture</a>
+        <a href="welcome.jsp" class="company-name">Tech Barn</a>
         <a href="logout" class="logout-btn">Logout</a>
     </header>
     
@@ -172,14 +172,14 @@
         <!-- Left Section: Title and Text -->
         <div class="left-section">
             <h1 class="main-title">
-                Welcome to Baes Couture
+                Welcome to Tech Barn
             </h1>
-            <p class="subtitle">Fashion Forward</p>
+            <p class="subtitle">Technology Marketplace</p>
             <p class="description">
                 <% 
-                        out.println("Discover our latest collection of elegant fashion pieces. " +
-                                   "From timeless classics to modern trends, Baes Couture offers the perfect style for every occasion. " +
-                                   "Explore our curated selection and find your next favorite piece.");
+                        out.println("Explore the latest in cutting-edge gadgets, smart devices, and innovative accessories. " +
+                                   "From flagship smartphones to immersive home entertainment, Tech Barn curates the best of modern technology. " +
+                                   "Find the perfect device to elevate your connected life.");
                 %>
             </p>
         </div>
@@ -187,7 +187,7 @@
         <!-- Right Section: Image -->
         <div class="right-section">
             <div class="image-container">
-                <img src="elle-summer-bag-trends.jpg" alt="Baes Couture Fashion">
+                <img src="elle-summer-bag-trends.jpg" alt="Tech Barn Technology">
             </div>
         </div>
     </div>

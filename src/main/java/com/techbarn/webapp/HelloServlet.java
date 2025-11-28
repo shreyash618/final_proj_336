@@ -1,4 +1,4 @@
-package com.buyme.webapp;
+package com.techbarn.webapp;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
