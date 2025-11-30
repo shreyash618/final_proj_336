@@ -31,7 +31,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('fashion.jpg') no-repeat center center/cover;
+        background: url('Images/devices4.jpg') no-repeat center center/cover;
         opacity: 0.25;
         z-index: 0;
         filter: blur(1px);

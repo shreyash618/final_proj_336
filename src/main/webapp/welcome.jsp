@@ -187,7 +187,7 @@
         <!-- Right Section: Image -->
         <div class="right-section">
             <div class="image-container">
-                <img src="elle-summer-bag-trends.jpg" alt="Tech Barn Technology">
+                <img src="Images/devices9.jpg" alt="Tech Barn Technology">
             </div>
         </div>
     </div>

@@ -53,8 +53,8 @@ public class LoginServlet extends HttpServlet {
                     if (rs.next()){
                         session.setAttribute ("username", username);
                         //session.setAttribute ("password", password);
-                        session.setAttribute ("firstName", rs.getString ("firstName"));
-                        session.setAttribute ("lastName", rs.getString ("lastName"));
+                        session.setAttribute ("first_name", rs.getString ("first_name"));
+                        session.setAttribute ("last_name", rs.getString ("last_name"));
                         
                         rs.close();
                         ps.close();
