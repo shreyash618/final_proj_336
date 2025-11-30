@@ -23,45 +23,8 @@
             width: 100%;
             overflow-x: hidden;
         }
-        
-        /* Header Styles */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 3rem;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .company-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #6b9080;
-            text-decoration: none;
-        }
-        
-        .logout-btn {
-            padding: 0.75rem 1.5rem;
-            background: #6b9080;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.3s ease, transform 0.2s;
-        }
-        
-        .logout-btn:hover {
-            background: #3e6b5c;
-            transform: scale(1.05);
-        }
-        
+
+
         /* Main Content Area */
         .main-content {
             display: flex;
@@ -161,11 +124,7 @@
     </style>
 </head>
 <body>
-    <!-- Header with Company Name and Logout Button -->
-    <header class="header">
-        <a href="welcome.jsp" class="company-name">Tech Barn</a>
-        <a href="logout" class="logout-btn">Logout</a>
-    </header>
+    <%@ include file="navbar.jsp" %>
     
     <!-- Main Content Area -->
     <div class="main-content">
