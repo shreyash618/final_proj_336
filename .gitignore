@@ -1,9 +1,9 @@
-sql/
 build/
 target/
 *.class
 .settings/
 .project
 .classpath
-
+.DS_Store
+.vscode/
 bin/

@@ -71,8 +71,7 @@ public class RegisterServlet extends HttpServlet {
                 }
 
                 //Get the database connection
-                ApplicationDB db = new ApplicationDB();	
-                Connection con = db.getConnection();
+                Connection con = ApplicationDB.getConnection();
 
                 // Check if email already exists
                 String query = "Select * from user WHERE email = ?";
@@ -83,7 +82,7 @@ public class RegisterServlet extends HttpServlet {
                 if (rs.next()){
                     rs.close();
                     ps.close();
-                    db.closeConnection(con);
+                    ApplicationDB.closeConnection(con);
                     errorMessage = "This email is already registered to an account. Please login with that account.";
                     request.setAttribute("errorMessage", errorMessage);
                     request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -101,7 +100,7 @@ public class RegisterServlet extends HttpServlet {
                 if (rs.next()){
                     rs.close();
                     ps.close();
-                    db.closeConnection(con);
+                    ApplicationDB.closeConnection(con);
                     errorMessage = "This username is already taken. Please try a different username.";
                     request.setAttribute("errorMessage", errorMessage);
                     request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -141,12 +140,12 @@ public class RegisterServlet extends HttpServlet {
 
                 if (rowsAffected > 0) {
                     ps.close();
-                    db.closeConnection(con);
+                    ApplicationDB.closeConnection(con);
                     response.sendRedirect("login.jsp");
                     return;
                 } else {
                     ps.close();
-                    db.closeConnection(con);
+                    ApplicationDB.closeConnection(con);
                     errorMessage = "Registration failed. Please try again.";
                     request.setAttribute("errorMessage", errorMessage);
                     request.getRequestDispatcher("register.jsp").forward(request, response);

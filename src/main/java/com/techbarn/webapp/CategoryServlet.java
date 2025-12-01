@@ -14,11 +14,22 @@ public class CategoryServlet extends HttpServlet{
         throws IOException, ServletException {
             try{
                 //Get the database connection
-                ApplicationDB db = new ApplicationDB();	
-                Connection con = db.getConnection();
+                Connection con = ApplicationDB.getConnection();
 
                 //get the categoryId
-                Integer categoryId = Integer.parseInt(request.getParameter("categoryId"));
+                //Integer categoryId = Integer.parseInt(request.getParameter("categoryId"));
+                //replaced with:
+                Integer categoryId;
+                try {
+                    String categoryIdParam = request.getParameter("categoryId");
+                    if (categoryIdParam == null || categoryIdParam.isEmpty()) {
+                        categoryId = 1; // Default to Phones
+                    } else {
+                        categoryId = Integer.parseInt(categoryIdParam);
+                    }
+                } catch (NumberFormatException e) {
+                    categoryId = 1; // Default to Phones if invalid
+                }
 
                 String pageTitle;
                 String bannerImage;
@@ -37,8 +48,8 @@ public class CategoryServlet extends HttpServlet{
                         bannerImage = "Images/headphones_banner.jpeg";
                         break;
                     default:
-                        pageTitle = "Products";
-                        bannerImage = "Images/devices4.jpg";
+                        pageTitle = "Phones";
+                        bannerImage = "Images/phone-banner.png";
                         break;
                 }
 
@@ -62,14 +73,14 @@ public class CategoryServlet extends HttpServlet{
                     item.setColor(rs.getString("color"));
                     item.setCondition(rs.getString("condition"));
                     item.setStock(rs.getBoolean("in_stock"));
-                    
+
                     // Set description - if not in DB, use a default or empty string
                     String description = rs.getString("description");
                     if (description == null) {
                         description = "";
                     }
                     item.setDescription(description);
-                    
+
                     // Get image path from database
                     String imagePath = rs.getString("image_path");
                     if (imagePath == null || imagePath.isEmpty()) {
@@ -83,7 +94,7 @@ public class CategoryServlet extends HttpServlet{
                 
                 rs.close();
                 ps.close();
-                con.close();
+                ApplicationDB.closeConnection(con);
                 request.setAttribute("pageTitle", pageTitle);
                 request.setAttribute("bannerImage", bannerImage);
                 request.setAttribute("items", items);
@@ -91,8 +102,8 @@ public class CategoryServlet extends HttpServlet{
             }
             catch(Exception e) {
                 e.printStackTrace();
-                request.setAttribute("errorMessage", "Connection failed: " + e.getMessage());
-                request.getRequestDispatcher("login.jsp").forward(request, response);
+                request.setAttribute("errorMessage", "Error loading category: " + e.getMessage());
+                request.getRequestDispatcher("category.jsp").forward(request, response);
             }
     }
 }
