@@ -85,7 +85,8 @@ CREATE TABLE Item (
     title       VARCHAR(20) NOT NULL,
     category_id TINYINT NOT NULL,
     color       VARCHAR(20),
-    in_stock    TINYINT(1) NOT NULL DEFAULT 1
+    in_stock    TINYINT(1) NOT NULL DEFAULT 1,
+    `description` varchar(300),
 );
 
 CREATE TABLE Phone (

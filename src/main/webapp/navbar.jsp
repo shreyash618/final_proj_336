@@ -77,9 +77,9 @@
         </a>
 
         <ul class="nav-links">
-            <li><a href="category.jsp">Phones</a></li>
-            <li><a href="tv.jsp">TVs</a></li>
-            <li><a href="headphone.jsp">Headphones</a></li>
+            <li><a href="category?categoryId=1">Phones</a></li>
+            <li><a href="category?categoryId=2">TVs</a></li>
+            <li><a href="category?categoryId=3">Headphones</a></li>
             <li><a href="search.jsp">Search</a></li>
             <li><a href="faq.jsp">FAQs</a></li>
             <li><a href="alert.jsp">Alerts</a></li>

@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Barn - Phones</title>
+    <title>Tech Barn — ${pageTitle}</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { 
@@ -26,7 +26,7 @@
         .category-hero {
             width: 100%;
             height: 300px;
-            background-image: url('Images/phone-banner.png'); 
+            background-image: url(${bannerImage}); 
             background-size: cover;
             background-position: center;
             display: flex;
@@ -57,9 +57,20 @@
 
         .item-card img {
             width: 100%;
-            height: 600px;
+            height: 250px;
             object-fit: cover;
             border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .item-card a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .item-card p {
+            margin: 5px 0;
+            font-weight: 500;
         }
 
         
@@ -67,35 +78,32 @@
 </head>
 <body>
     <%@ include file="navbar.jsp" %>
-    <!-- Main Content Area -->
     <div class="category-hero">
-        <h1>Phones</h1>
+        <h1>${pageTitle}</h1>
     </div>
     <div class="item-grid">
+        <%
+            ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
+            if (items != null && !items.isEmpty()) {
+                for (ItemBean item : items) {
+        %>
         <div class="item-card">
-            <a href="item.jsp">
-                <img src="Images/item_photos/phones/iphone_pink.jpg"></img>
-                <p>iPhone 15 Pro</p>
+            <a href="item.jsp?item_id=<%= item.getId() %>">
+                <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
+                <p><%= item.getName() %></p>
+                <p style="color: #666; font-size: 14px;"><%= item.getBrand() %> - <%= item.getColor() %></p>
             </a>
         </div>
-
-        <div class="item-card">
-            <a href="item.jsp">
-                <img src="Images/item_photos/phones/samsung_phantom_black.jpeg"></img>
-                <p>Galaxy S24 Ultra</p>
-            </a>
+        <%
+                }
+            } else {
+        %>
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <p>No items found in this category.</p>
         </div>
-
-        <div class="item-card">
-            <a href="item.jsp">
-                <img src="Images/item_photos/phones/google_obsidian.jpeg"></img>
-                <p>Google Pixel</p>
-            </a>
-        </div>
-    
-        <!-- add more dynamically later -->
+        <%
+            }
+        %>
     </div>
-    
-
 </body>
 </html>
