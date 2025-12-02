@@ -20,7 +20,7 @@ public class ApplicationDB {
 		
 		try {
 			//Load JDBC driver - the interface standardizing the connection procedure. Look at WEB-INF\lib for a mysql connector jar file, otherwise it fails.
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			throw new SQLException("MySQL Driver not found.", e);
 		}
@@ -54,11 +54,10 @@ public class ApplicationDB {
 	
 	
 	public static void main(String[] args) {
-		ApplicationDB dao = new ApplicationDB();
 		try {
-			Connection connection = dao.getConnection();
+			Connection connection = ApplicationDB.getConnection();
 			System.out.println(connection);		
-			dao.closeConnection(connection);
+			ApplicationDB.closeConnection(connection);
 		} catch (SQLException e) {
 			System.err.println("Database connection error: " + e.getMessage());
 			e.printStackTrace();

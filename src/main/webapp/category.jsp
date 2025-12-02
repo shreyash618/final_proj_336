@@ -78,6 +78,16 @@
 </head>
 <body>
     <%@ include file="navbar.jsp" %>
+    <%
+        String errorMessage = (String) request.getAttribute("errorMessage");
+        if (errorMessage != null) {
+    %>
+    <div style="padding: 20px; background-color: #ffebee; color: #c62828; margin: 20px; border-radius: 5px; border-left: 4px solid #c62828;">
+        <strong>Error:</strong> <%= errorMessage %>
+    </div>
+    <%
+        }
+    %>
     <div class="category-hero">
         <h1>${pageTitle}</h1>
     </div>
@@ -88,7 +98,7 @@
                 for (ItemBean item : items) {
         %>
         <div class="item-card">
-            <a href="item.jsp?item_id=<%= item.getId() %>">
+            <a href="item?itemId=<%= item.getId() %>">
                 <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                 <p><%= item.getName() %></p>
                 <p style="color: #666; font-size: 14px;"><%= item.getBrand() %> - <%= item.getColor() %></p>
