@@ -53,23 +53,27 @@
             border-radius: 10px;
             text-align: center;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            max-width:1000px;
         }
         .card-phone img {
-            height: 180px;
-        }
-
-        .card-tv img {
-            height: 220px;
-        }
-
-        .card-headphones img {
-            height: 180px;
-        }
-
-        .item-card img {
             width: 100%;
             height: 250px;
             object-fit: cover;
+        }
+
+        .card-tv img {
+            width: 100%;
+            height: 250px;
+            object-fit: scale-down;
+        }
+
+        .card-headphones img {
+            width: 100%;
+            height: 250px;
+            object-fit: scale-down;
+        }
+
+        .item-card img {
             border-radius: 8px;
             margin-bottom: 10px;
         }
@@ -105,10 +109,11 @@
     <div class="item-grid">
         <%
             ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
+            String cardStyle = (String) request.getAttribute("cardStyle");
             if (items != null && !items.isEmpty()) {
                 for (ItemBean item : items) {
         %>
-        <div class="item-card"> <!--${cardClass}-->
+        <div class="item-card ${cardStyle}"> <!--${cardStyle}-->
             <a href="item?itemId=<%= item.getId() %>">
                 <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                 <p><%= item.getName() %></p>

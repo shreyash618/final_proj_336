@@ -75,7 +75,7 @@ public class ItemServlet extends HttpServlet{
                         tv.setIsHdr(rs.getBoolean("isHdr"));
                         tv.setRefreshRate(rs.getInt("refresh_rate"));
                         tv.setIsSmartTv(rs.getBoolean("isSmartTv"));
-                        tv.setScreenSize(rs.getInt("screen_size"));
+                        tv.setScreenSize(rs.getInt("tv_screen_size"));
                         tv.setPanelType(rs.getString("panel_type"));
                     } else if (categoryId == 3) {
                         // Headphones

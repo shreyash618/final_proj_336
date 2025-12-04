@@ -17,15 +17,29 @@
             width: 100%;
             overflow-x: hidden;
             /*background: #ffffff;*/
-            background-image: url('Images/green-question-banner.png');
+        }
+        .page-container::before{
+            content:'';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('Images/gradient-question-banner.png');
             background-size: cover;
             background-position: center;
+            opacity: 0.8;
+            z-index: -1;
         }
 
         .faq-container { 
             max-width: 1200px; 
             margin: 0 auto; 
             padding: 40px 20px; 
+            position: relative;
+            background-color: hwb(0 100% 0% / 0.9);
+            border-radius: 10px ;
         }
         
         .header { 
@@ -398,12 +412,14 @@
     </style>
 </head>
 <body>
+
 <%@ include file="navbar.jsp" %>
 <% 
     // Declare role once at the top
     String role = (String) session.getAttribute("role");
     boolean isRepOrAdmin = "rep".equals(role) || "admin".equals(role);
 %>
+<div class ="page-container">
 <div class="faq-container">
     <div class="header">
         <h1>FAQ / Customer Questions</h1>
@@ -412,7 +428,7 @@
                 Back to Dashboard
             </a>
         <% } else { %>
-            <a href="welcome.jsp" class="dashboard-btn">
+            <a href="welcome" class="dashboard-btn">
                 Back to Home
             </a>
         <% } %>
@@ -459,7 +475,7 @@
             </form>
         <% } else { %>
             <div class="login-prompt">
-                Please <a href="login.jsp" class="login-link">login</a> to ask a question.
+                Please <a href="login" class="login-link">login</a> to ask a question.
             </div>
         <% } %>
     </div>
@@ -505,6 +521,7 @@
         </div>
     </div>
     
+</div>
 </div>
 </body>
 </html>

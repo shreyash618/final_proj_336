@@ -71,7 +71,7 @@
 <!-- Header with Company Name and Logout Button -->
 <header class="header">
     <nav class="navbar">
-        <a href="welcome.jsp" class="company-logo">
+        <a href="welcome" class="company-logo">
             <img src="Images/Tech_Barn_Logo.png" alt="Tech Barn Logo">
             <span>Homepage</span>
         </a>
@@ -80,8 +80,8 @@
             <li><a href="category?categoryId=1">Phones</a></li>
             <li><a href="category?categoryId=2">TVs</a></li>
             <li><a href="category?categoryId=3">Headphones</a></li>
-            <li><a href="search.jsp">Search</a></li>
-            <li><a href="faq.jsp">FAQs</a></li>
+            <li><a href="search">Search</a></li>
+            <li><a href="faq">FAQs</a></li>
             <li><a href="alert.jsp">Alerts</a></li>
             <li><a href="account.jsp">My Account</a></li>
         </ul>

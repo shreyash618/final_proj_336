@@ -207,7 +207,7 @@
               <div id="spinner" class="spinner"></div>
               <script>
               setTimeout(function() {
-                  window.location.href = 'welcome.jsp';
+                  window.location.href = 'welcome';
               }, 1500);
               </script>
           <% } 
@@ -215,7 +215,7 @@
               <div class="message error"><%= request.getAttribute("errorMessage") %></div>
           <% } %>
       
-      <a class="switch-link" href="register.jsp">Don't have an account? Register</a>
+      <a class="switch-link" href="register">Don't have an account? Register</a>
     </div>
   </div>
 </body>

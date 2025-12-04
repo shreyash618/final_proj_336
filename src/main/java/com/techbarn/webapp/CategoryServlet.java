@@ -38,7 +38,7 @@ public class CategoryServlet extends HttpServlet{
                 switch (categoryId) {
                     case 1:
                         pageTitle = "Phones";
-                        bannerImage = "Images/phone-banner.png";
+                        bannerImage = "Images/phone_banner.png";
                         cardStyle = "card-phone";
                         break;
                     case 2:
@@ -53,7 +53,7 @@ public class CategoryServlet extends HttpServlet{
                         break;
                     default:
                         pageTitle = "Phones";
-                        bannerImage = "Images/phone-banner.png";
+                        bannerImage = "Images/phone_banner.png";
                         cardStyle = "card-phone";
                         break;
                 }
@@ -76,15 +76,6 @@ public class CategoryServlet extends HttpServlet{
                     item.setName(rs.getString("title"));
                     item.setBrand(rs.getString("brand"));
                     item.setColor(rs.getString("color"));
-                    item.setCondition(rs.getString("condition"));
-                    item.setStock(rs.getBoolean("in_stock"));
-
-                    // Set description - if not in DB, use a default or empty string
-                    String description = rs.getString("description");
-                    if (description == null) {
-                        description = "";
-                    }
-                    item.setDescription(description);
 
                     // Get image path from database
                     String imagePath = rs.getString("image_path");

@@ -41,7 +41,7 @@
         .item-image img {
             width: 300px;
             height: 250px;
-            object-fit: cover;
+            object-fit: scale-down;
             border-radius: 12px;
         }
 
@@ -53,8 +53,10 @@
 
         .item-info h4 {
             margin-bottom: 10px;
+            margin-top: 0;
             font-weight: 400;
             color: #444;
+            line-height: 1.2;
         }
         /* more specific selectors so they override .item-info h4 */
         .item-info h4.in-stock {
@@ -74,8 +76,13 @@
         }
         .item-info p {
             max-width: 500px;
-            line-height: 1.4;
-            color: #333;
+            line-height: 1.2;
+            color: #444;
+            margin: 0;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 400;
+            font-size: inherit;
         }
         
         .item-specs {

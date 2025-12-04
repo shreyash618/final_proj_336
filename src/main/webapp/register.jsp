@@ -218,7 +218,7 @@
         
         <button id="register-btn" class="submit-button">Register</button>
 
-        <a class="switch-link" href="login.jsp">Already have an account? Login</a>
+        <a class="switch-link" href="login">Already have an account? Login</a>
       </form>
 
     </div>

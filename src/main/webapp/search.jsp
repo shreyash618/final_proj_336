@@ -2,6 +2,43 @@
     pageEncoding="UTF-8" import="com.techbarn.webapp.*"%>
 <%@ page import="java.io.*,java.util.*,java.sql.*"%>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
+<%!     //used in the html to transform the name
+    public String transformName (String category){
+        if (category == null || category.isEmpty()) return category;
+        category = category.replaceAll("`","").replaceAll("_", " ");
+        category = category.substring(0,1).toUpperCase() + category.substring(1);
+
+        String[] prefixes = {"is ", "has ", "Is", "Has"};
+        for (String p : prefixes) {
+            if (category.startsWith(p)) {
+                category = category.substring(p.length());
+                break;
+            }
+        }
+        category = category.replaceAll("([a-z])([A-Z])", "$1 $2");
+        String[] words_list = category.split(" "); //split into words based on capital letters, underscores and spaces
+        String tmp ="";
+        for (String word: words_list){
+            if (word.isEmpty()){
+                continue;
+            }
+            if (word.length() <= 3) {
+                // Fully uppercase if <= 3 letters
+                tmp = tmp + word.toUpperCase() + " ";
+            }
+            else{
+                tmp = tmp + word.substring(0,1).toUpperCase() + word.substring(1) + " "; //capitalize each word
+            }
+        }
+        category = tmp;
+        //category = category.replaceAll("is", "").replaceAll("has","");
+        //Pattern pattern1 = Pattern.compile("^is|^has|^Is|^Has"); //remove and maybe even add question mark?
+        //Matcher matcher1 = pattern.matcher(category);
+        //capitalize words that 3 characters or shorter
+
+        return category.trim(); //or should i use .strip()
+    }
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -44,16 +81,16 @@
             background: linear-gradient(135deg, rgba(0,0,0,0.45), rgba(0,0,0,0.15));
         }
 
-        .category-hero form {
+
+
+        /* CSS for search bar */
+        .search {
             width: 100%;
             display: flex;
             /*justify-content: center;*/
             padding: 0 40px;
             z-index: 1;
-        }
-
-        /* CSS for search bar */
-        .search {
+            
             --padding: 14px;
             margin-left: 290px; /*filter + filter-margin + 10px*/
             width: 100%;
@@ -71,7 +108,7 @@
         }
         .search-input {
             font-size: 20px;
-            font-family: 'Lexend', sans-serif;
+            font-family: inherit;
             margin-left: var(--padding);
             outline: none;
             border: none;
@@ -134,16 +171,14 @@
 
         .filters-header-title {
             font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.01em;
             color: #111827;
         }
-
+        
         .filters-header-subtitle {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+            font-size: 12px;
+            letter-spacing: 0.01em;
             color: #6b7280;
         }
 
@@ -158,9 +193,8 @@
             font-weight: 600;
             margin-bottom: 10px;
             color: #111827;
-            font-size: 13px;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 0.01em;
         }
 
         /* “Pill” style checkboxes */
@@ -206,7 +240,7 @@
             padding: 9px 0;
             border: none;
             border-radius: 999px;
-            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            background: linear-gradient(135deg, #6b46e5, #6366f1);
             color: #fff;
             font-weight: 600;
             cursor: pointer;
@@ -238,11 +272,13 @@
 
         .item-card {
             background: #fff;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: left;
-            box-shadow: 0 8px 24px rgba(15,23,42,0.08);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            object-fit: scale-down;
+            width: 100%;
+            height: 250px;
         }
 
         .item-card:hover {
@@ -278,6 +314,40 @@
             margin: 5px 0;
             font-weight: 500;
         }
+        /*For the results line*/
+        .results {
+            min-height: 300px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+
+        .results-header h2 {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .results-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .sort {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .sort select {
+            padding: 5px 8px;
+            border-radius: 999px;
+            border: 1px solid #d1d5db;
+        }
     </style>
 </head>
 <body>
@@ -292,53 +362,91 @@
     <%
         }
     %>
+    <form method="post" action="search"> 
     <div class="category-hero">
-        <form>
             <div class="search">
                 <span class="search-icon material-symbols-outlined">search</span>
                 <input class = "search-input" type="search" placeholder="Search our inventory..."></input>
             </div>
-        </form>
     </div>
     <div class ="search-layout">
         <!-- Sidebar (left)-->
         <aside class="filter-container">
-            <form method="get" action="search">
                 <div class="filters">
                     <div class="filters-header">
                         <span class="filters-header-title">Filters</span>
                         <span class="filters-header-subtitle">Refine results</span>
                     </div>
+                    <% 
+                        ArrayList<String> categories =  (ArrayList<String>) request.getAttribute("categories");
+                        Integer cat_count =  (Integer) request.getAttribute("categories_count");
+                        System.out.println("Categories: " + categories);
+                        System.out.println("Count" + cat_count);
 
-                    <div class="filter-group">
-                        <!-- dynamically loop through and render the properties as h4? -->
-                        <span class="filter-title">Condition</span>
-                        <label class="filter-pill">
-                             <!-- dynamically render the possible values for each property as h6? -->
-                            <input type="checkbox" name="condition" value="New">
-                            <span>New</span>
-                        </label>
-                        <label class="filter-pill">
-                            <input type="checkbox" name="condition" value="Like New">
-                            <span>Like New</span>
-                        </label>
-                        <label class="filter-pill">
-                            <input type="checkbox" name="condition" value="Used">
-                            <span>Used</span>
-                        </label>
-                    </div>
+                        
+                        HashMap<String, ArrayList<String>> categoryValues= (HashMap<String, ArrayList<String>>) request.getAttribute("categoryValues");
+                        
+                        if (categories != null) {
+                            for (String category: categoryValues.keySet()){
+                    %>
+                            <!--for each category, create a filter group -->
+                            <!--dynamically loop through and render the properties -->
+                        <div class="filter-group">
+                            <!--for each value in category, create a span and label-->
+                            <span class="filter-title"><%= transformName(category) %></span>
+                            <%for (String categoryValue: categoryValues.get(category)){%>
+                            <!--dynamically render the possible values for each property -->
+                            <label class="filter-pill">
+                                <input type="checkbox" name="<%= category %>" value="<%= categoryValue %>">
+                                <span><%= categoryValue %></span>
+                            </label>
+                            <%
+                                }
+                            %>
+                        </div>
+                    <%
+                            }
+                        }
+                    %>
+                    <button type="submit" class="apply-button">Apply Filters</button>
                 </div>
             </form>
         </aside>
         <!-- Results Grid (right)-->
-         
+        <div class="results">
+        <div class="results-header">
+            <div>
+                <h2>Search results</h2>
+                <p class="results-subtitle">
+                    <% 
+                        String q = request.getParameter("q");
+                        ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
+                        int count = (items != null) ? items.size() : 0;
+                    %>
+                    <%= count %> item(s) found
+                    <% if (q != null && !q.isEmpty()) { %>
+                        for "<%= q %>"
+                    <% } %>
+                </p>
+            </div>
+
+            <div class="sort">
+                <label for="sortBy">Sort by</label>
+                <select id="sortBy" name="sortBy" form="sortForm">
+                    <option value="relevance">Relevance</option>
+                    <option value="priceAsc">Price: Low to High</option>
+                    <option value="priceDesc">Price: High to Low</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+        </div>
+
         <div class="item-grid">
             <%
-                ArrayList<ItemBean> items = (ArrayList<ItemBean>) request.getAttribute("items");
                 if (items != null && !items.isEmpty()) {
                     for (ItemBean item : items) {
             %>
-            <div class="item-card"> <!--${cardClass}-->
+            <div class="item-card">
                 <a href="item?itemId=<%= item.getId() %>">
                     <img src="<%= item.getImagePath() %>" alt="<%= item.getName() %>">
                     <p><%= item.getName() %></p>
@@ -349,13 +457,14 @@
                     }
                 } else {
             %>
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">
                 <p>No items found matching the search criteria.</p>
             </div>
             <%
                 }
             %>
-        </div>
     </div>
+    </div>
+</div>
 </body>
 </html>

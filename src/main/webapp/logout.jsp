@@ -152,7 +152,7 @@
                 <div class="icon">&#10004;</div>
                 <h1>You've Been Logged Out</h1>
                 <p>Thank you for visiting Tech Barn. You have been successfully logged out.</p>
-                <button id="login-btn" onclick="window.location.href ='login.jsp'" class="submit-button">Return to Login</button>
+                <button id="login-btn" onclick="window.location.href ='login'" class="submit-button">Return to Login</button>
             </div>
         </div>
     </body>
