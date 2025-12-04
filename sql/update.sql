@@ -1,7 +1,7 @@
 USE tech_barn;
 
 -- Add image_path column to Item table
-ALTER TABLE Item ADD COLUMN image_path VARCHAR(255);
+--ALTER TABLE Item ADD COLUMN image_path VARCHAR(255);
 
 -- Update image paths for Phones (category_id = 1)
 -- Format: brand_color.extension

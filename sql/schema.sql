@@ -9,7 +9,7 @@ CREATE TABLE Admin (
     salary      INT,
     password    VARCHAR(20) NOT NULL,
     email       VARCHAR(50) NOT NULL,
-    phone_no    VARCHAR(10) NOT NULL
+    phone_no    CHAR(10)
 );
 
 CREATE TABLE Cust_Rep (
@@ -20,7 +20,7 @@ CREATE TABLE Cust_Rep (
     salary      INT,
     password    VARCHAR(20) NOT NULL,
     email       VARCHAR(50) NOT NULL,
-    phone_no    VARCHAR(10),
+    phone_no    CHAR(10),
     region      VARCHAR(50),
     admin_id    INT NOT NULL,
     CONSTRAINT fk_custrep_admin
@@ -86,7 +86,7 @@ CREATE TABLE Item (
     category_id TINYINT NOT NULL,
     color       VARCHAR(20),
     in_stock    TINYINT(1) NOT NULL DEFAULT 1,
-    `description` varchar(300),
+    `description` varchar(300)
 );
 
 CREATE TABLE Phone (
@@ -110,7 +110,7 @@ CREATE TABLE TV (
     isHdr        TINYINT(1) NOT NULL DEFAULT 0,
     refresh_rate INT NOT NULL,
     isSmartTv    TINYINT(1) NOT NULL DEFAULT 0,
-    screen_size  INT NOT NULL,
+    tv_screen_size  INT NOT NULL,
     panel_type   VARCHAR(20) NOT NULL,
     CONSTRAINT fk_tv_item
         FOREIGN KEY (item_id) REFERENCES Item(item_id)
@@ -148,7 +148,7 @@ CREATE TABLE `Transaction` (
     buyer_id    INT NOT NULL,
     trans_time  DATETIME NOT NULL,
     status      VARCHAR(20) NOT NULL,
-    UNIQUE (auction_id)
+    UNIQUE (auction_id),
     CONSTRAINT fk_trans_auction
         FOREIGN KEY (auction_id) REFERENCES Auction(auction_id),
     CONSTRAINT fk_trans_buyer
