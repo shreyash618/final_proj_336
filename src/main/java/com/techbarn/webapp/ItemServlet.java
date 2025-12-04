@@ -59,11 +59,11 @@ public class ItemServlet extends HttpServlet{
                         phone.setOs(rs.getString("os"));
                         phone.setStorageGb(rs.getInt("storage_gb"));
                         phone.setRamGb(rs.getInt("ram_gb"));
-                        phone.setScreenSize(rs.getFloat("screen_size"));
+                        phone.setScreenSize(rs.getFloat("phone_screen_size"));
                         phone.setRearCameraMp(rs.getInt("rear_camera_mp"));
                         phone.setFrontCameraMp(rs.getInt("front_camera_mp"));
                         phone.setIsUnlocked(rs.getBoolean("isUnlocked"));
-                        phone.setBatteryLife(rs.getInt("battery_life"));
+                        phone.setBatteryLife(rs.getInt("phone_battery_life"));
                         phone.setIs5G(rs.getBoolean("is5G"));
                     } else if (categoryId == 2) {
                         // TV
@@ -87,6 +87,7 @@ public class ItemServlet extends HttpServlet{
                         headphones.setHasMicrophone(rs.getBoolean("hasMicrophone"));
                         headphones.setHasNoiseCancellation(rs.getBoolean("hasNoiseCancellation"));
                         headphones.setCableType(rs.getString("cable_type"));
+                        headphones.setBatteryLife(rs.getInt("headphone_battery_life"));
                     } else {
                         item = new ItemBean(); //Fallback to base ItemBean (category can't be null so this is unneccessary but we will keep it just in case)
                     }

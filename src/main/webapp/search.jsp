@@ -39,6 +39,19 @@
         return category.trim(); //or should i use .strip()
     }
 %>
+<%!
+public String transformBoolean (String booleanInt){
+    if (booleanInt == null) return booleanInt;
+    String trimmed = booleanInt.trim();
+    if (trimmed.equals("1") || trimmed.equalsIgnoreCase("true")){
+        return "Yes";
+    }
+    else if (trimmed.equals("0") || trimmed.equalsIgnoreCase("false")){
+        return "No";
+    }
+    return booleanInt;
+}
+%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -276,30 +289,17 @@
             border-radius: 10px;
             text-align: center;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
-            object-fit: scale-down;
-            width: 100%;
-            height: 250px;
         }
 
         .item-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 14px 35px rgba(15,23,42,0.14);
         }
-        .card-phone img {
-            height: 180px;
-        }
-
-        .card-tv img {
-            height: 220px;
-        }
-
-        .card-headphones img {
-            height: 180px;
-        }
 
         .item-card img {
             width: 100%;
-            height: 250px;
+            height: auto;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -398,7 +398,7 @@
                             <!--dynamically render the possible values for each property -->
                             <label class="filter-pill">
                                 <input type="checkbox" name="<%= category %>" value="<%= categoryValue %>">
-                                <span><%= categoryValue %></span>
+                                <span><%= transformBoolean(categoryValue) %></span>
                             </label>
                             <%
                                 }

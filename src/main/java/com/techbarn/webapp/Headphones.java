@@ -5,6 +5,7 @@ public class Headphones extends ItemBean {
     private boolean hasMicrophone;
     private boolean hasNoiseCancellation;
     private String cableType;
+    private int batteryLife;
 
     public Headphones() {
         super();
@@ -22,4 +23,7 @@ public class Headphones extends ItemBean {
 
     public void setCableType(String cableType) { this.cableType = cableType; }
     public String getCableType() { return cableType; }
+
+    public void setBatteryLife(int batteryLife) { this.batteryLife = batteryLife; }
+    public int getBatteryLife() { return batteryLife; }
 }

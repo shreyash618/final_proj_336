@@ -32,14 +32,21 @@
         height: 40px;
         width: auto;
         margin-right: 10px;
+        border-radius: 5px;
     }
 
     .nav-links {
         list-style: none;
         display: flex;
+        align-items: center;
         gap: 1.5rem;
         margin: 0;
         padding: 0;
+    }
+    
+    .nav-links li {
+        display: flex;
+        align-items: center;
     }
 
     .nav-links a {
@@ -49,11 +56,28 @@
         padding: 0.5rem 0.75rem;
         border-radius: 6px;
         transition: background 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.5;
+        height: 100%;
     }
 
     .nav-links a:hover {
         background-color: #6b9080;
         color: #fff;
+    }
+    
+    .nav-links img {
+        height: 24px;
+        width: auto;
+        display: block;
+        object-fit: contain;
+        margin-left: 5px;
+    }
+    
+    .nav-links a:hover img {
+        filter: brightness(0) invert(1);
     }
 
     .logout-btn {
@@ -81,13 +105,13 @@
         </a>
 
         <ul class="nav-links">
-            <li><a href="category?categoryId=1">Phones</a></li>
-            <li><a href="category?categoryId=2">TVs</a></li>
-            <li><a href="category?categoryId=3">Headphones</a></li>
-            <li><a href="search">Search</a></li>
-            <li><a href="faq">FAQs</a></li>
-            <li><a href="alert.jsp">Alerts</a></li>
-            <li><a href="account.jsp">My Account</a></li>
+            <li><a href="category?categoryId=1">Phones <img src="Images/phone_icon.png"/></a></li>
+            <li><a href="category?categoryId=2">TVs <img src="Images/tv_icon.png"/></a></li>
+            <li><a href="category?categoryId=3">Headphones <img src="Images/headphones_icon.png"/></a></li>
+            <li><a href="search">Search<img src="Images/search_icon.png"/></a></li>
+            <li><a href="faq">FAQs <img src="Images/question_icon.png"/></a></li>
+            <li><a href="alert.jsp">Alerts <img src="Images/notification_icon.png"/></a></li>
+            <li><a href="account.jsp">My Account <img src="Images/settings_icon.png"/></a></li>
         </ul>
 
         <a href="logout" class="logout-btn">Logout</a>
