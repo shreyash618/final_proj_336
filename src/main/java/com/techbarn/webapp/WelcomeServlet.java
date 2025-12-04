@@ -1,24 +1,33 @@
 package com.techbarn.webapp;
 
-import java.io.IOException;
+public class TV extends ItemBean {
+    private String resolution;
+    private boolean isHdr;
+    private int refreshRate;
+    private boolean isSmartTv;
+    private int screenSize;
+    private String panelType;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.*;
+    public TV() {
+        super();
+    }
 
-@WebServlet ("/welcome")
-public class WelcomeServlet extends HttpServlet {
-    @Override
-    protected void doGet (HttpServletRequest request, HttpServletResponse response) 
-        throws ServletException, IOException {
+    // Getters and Setters
+    public void setResolution(String resolution) { this.resolution = resolution; }
+    public String getResolution() { return resolution; }
 
-            HttpSession session = request.getSession(false);                            // use existing session
+    public void setIsHdr(boolean isHdr) { this.isHdr = isHdr; }
+    public boolean getIsHdr() { return isHdr; }
 
-            // check if user is logged in
-            if (session != null && session.getAttribute("username") != null) {          // if the user is logged in, show welcome page
-                request.getRequestDispatcher("welcome.jsp").forward(request, response);
-            } else {                                                                        // if the user not logged in, send them back to login page
-                response.sendRedirect("login.jsp");
-            }
-        }
+    public void setRefreshRate(int refreshRate) { this.refreshRate = refreshRate; }
+    public int getRefreshRate() { return refreshRate; }
+
+    public void setIsSmartTv(boolean isSmartTv) { this.isSmartTv = isSmartTv; }
+    public boolean getIsSmartTv() { return isSmartTv; }
+
+    public void setScreenSize(int screenSize) { this.screenSize = screenSize; }
+    public int getScreenSize() { return screenSize; }
+
+    public void setPanelType(String panelType) { this.panelType = panelType; }
+    public String getPanelType() { return panelType; }
 }

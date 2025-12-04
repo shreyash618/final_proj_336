@@ -1,4 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%
+    // Check if user is logged in as admin
+    if (session.getAttribute("username") == null || !"admin".equals(session.getAttribute("role"))) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,16 +13,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-        body { background: #ffffff; min-height: 100vh; padding: 40px 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        .header { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #6b9080; }
-        h1 { color: #333; font-size: 2rem; font-weight: 700; }
-        .logout-btn { padding: 12px 24px; background: #6b9080; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; transition: all 0.3s; }
-        .logout-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107, 144, 128, 0.3); background: #5a7a6a; }
-        .quick-links { background: #f8f9fa; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        .quick-links h3 { color: #333; margin-bottom: 15px; font-size: 1.3rem; font-weight: 700; }
-        .link-card { display: inline-block; padding: 15px 25px; background: #6b9080; color: white; text-decoration: none; border-radius: 8px; margin: 5px; font-weight: 600; transition: all 0.3s; }
-        .link-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(107, 144, 128, 0.3); background: #5a7a6a; }
+        body { background: #ffffff; min-height: 100vh; }
+        
+        /* Navbar Styles */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .company-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #6b9080;
+            text-decoration: none;
+        }
+        .company-logo img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+        }
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links a {
+            color: #6b9080;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+        }
+        .nav-links a:hover {
+            background-color: #6b9080;
+            color: #fff;
+        }
+        .logout-btn {
+            padding: 0.6rem 1.2rem;
+            background: #6b9080;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .logout-btn:hover {
+            background: #3e6b5c;
+            transform: scale(1.05);
+        }
+        
+        /* Content Styles */
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         .form-card { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .form-card h2 { color: #2e7d32; margin-bottom: 25px; font-size: 1.5rem; font-weight: 700; }
         .form-group { margin-bottom: 20px; }
@@ -30,17 +91,24 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Admin Dashboard</h1>
-            <a href="<%=request.getContextPath()%>/logout" class="logout-btn">Logout</a>
-        </div>
+    <!-- Admin Navbar -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="admin_home.jsp" class="company-logo">
+                <img src="Images/Tech_Barn_Logo.png" alt="Tech Barn Logo">
+                <span>Admin Dashboard</span>
+            </a>
 
-        <div class="quick-links">
-            <h3>Quick Links</h3>
-            <a href="<%=request.getContextPath()%>/admin?action=reports" class="link-card">Sales Reports</a>
-            <a href="<%=request.getContextPath()%>/faq" class="link-card">FAQ Management</a>
-        </div>
+            <ul class="nav-links">
+                <li><a href="<%=request.getContextPath()%>/admin?action=reports">Sales Reports</a></li>
+                <li><a href="<%=request.getContextPath()%>/faq">FAQ Management</a></li>
+            </ul>
+
+            <a href="<%=request.getContextPath()%>/logout" class="logout-btn">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
 
         <div class="form-card">
             <h2>Create Customer Representative</h2>

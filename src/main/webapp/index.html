@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tomcat Web Project</title>
-    <link rel="stylesheet" href="static/css/styles.css">
+    <title>Welcome to Tech Barn</title>
+    <meta http-equiv="refresh" content="0; url=login.jsp">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .loading {
+            text-align: center;
+        }
+        .loading h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .loading p {
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to the Tomcat Web Project</h1>
-    </header>
-    <main>
-        <p>This is the main page of your web application.</p>
-        <button id="fetchData">Fetch Data</button>
-        <div id="dataContainer"></div>
-    </main>
-    <footer>
-        <p>&copy; 2023 Tomcat Web Project</p>
-    </footer>
-    <script src="static/js/app.js"></script>
+    <div class="loading">
+        <h1>Welcome to Tech Barn</h1>
+        <p>Redirecting to login...</p>
+    </div>
+    <script>
+        // Redirect to login page immediately
+        window.location.href = 'login.jsp';
+    </script>
 </body>
 </html>

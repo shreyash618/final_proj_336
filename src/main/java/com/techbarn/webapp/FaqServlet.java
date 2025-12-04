@@ -24,9 +24,12 @@ public class FaqServlet extends HttpServlet {
         List<Question> list;
         if (q != null && !q.trim().isEmpty()) {
             list = QuestionDAO.searchByKeyword(q.trim());
-            // Apply status filter to search results if rep/admin
+            // Apply status filter to search results
             if (isRepOrAdmin && statusFilter != null) {
                 list = filterByStatus(list, statusFilter);
+            } else if (!isRepOrAdmin) {
+                // Regular users should only see answered questions even in search
+                list = filterByStatus(list, "answered");
             }
         } else {
             if (isRepOrAdmin) {

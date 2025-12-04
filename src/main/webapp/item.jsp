@@ -2,6 +2,15 @@
     pageEncoding="UTF-8" import="com.techbarn.webapp.*"%>
 <%@ page import="java.io.*,java.util.*,java.sql.*"%>
 <%@ page import="javax.servlet.http.*,javax.servlet.*" %>
+
+<%
+    // Check if user is logged in
+    if (session.getAttribute("username") == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+
 <!DOCTYPE html>
 <html>
 <head>

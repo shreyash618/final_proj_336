@@ -1,9 +1,39 @@
+# Eclipse specific files
+.settings/
+.classpath
+.project
+
+# Build directories
 build/
 target/
-*.class
-.settings/
-.project
-.classpath
-.DS_Store
-.vscode/
 bin/
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# IDE specific
+.metadata/
+.recommenders/
+RemoteSystemsTempFiles/
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Tomcat
+Servers/
