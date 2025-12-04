@@ -19,21 +19,8 @@ public class SearchServlet extends HttpServlet{
 
                 /* code below used to initialize the sidebar filter  */
                 /* get the list of filter categories */
-                String query ="SELECT COLUMN_NAME "+
-                "FROM INFORMATION_SCHEMA.COLUMNS "+
-                "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
-                "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') "+
-                "ORDER BY ORDINAL_POSITION";
-                PreparedStatement ps = con.prepareStatement(query);
-                ResultSet rs = ps.executeQuery();
+                ArrayList<String> categories = getFilterCategories();
 
-                ArrayList<String> categories = new ArrayList<>();
-                while (rs.next()) {
-                    categories.add (rs.getString(1)); // gets the category name from column index 1 (of each row)
-                }
-                //categories.remove ("item_id");
-                rs.close();
-                ps.close();
                 /* get the list of values per category */
                 /* Realized I would need a dictionary */
                 HashMap<String, ArrayList<String>> categoryValues = new HashMap<>();
@@ -60,7 +47,6 @@ public class SearchServlet extends HttpServlet{
                 }
 
                 ApplicationDB.closeConnection(con);
-                request.setAttribute ("categories_count", categories.size());
                 request.setAttribute("categories", categories);
                 request.setAttribute("categoryValues", categoryValues);
                 request.getRequestDispatcher("search.jsp").forward(request, response);
@@ -109,6 +95,37 @@ public class SearchServlet extends HttpServlet{
         return category.trim(); //or should i use .strip()
     }
     
+    private ArrayList<String> getFilterCategories(){
+        ArrayList<String> categories = new ArrayList<>();
+        try{
+            //Get the database connection
+            Connection con = ApplicationDB.getConnection();
+
+            /* code below used to initialize the sidebar filter  */
+            /* get the list of filter categories */
+            String query ="SELECT COLUMN_NAME "+
+            "FROM INFORMATION_SCHEMA.COLUMNS "+
+            "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
+            "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') "+
+            "ORDER BY ORDINAL_POSITION";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                categories.add (rs.getString(1)); // gets the category name from column index 1 (of each row)
+            }
+            //categories.remove ("item_id");
+            rs.close();
+            ps.close();
+            ApplicationDB.closeConnection(con);
+            return(categories);
+            
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return(categories);
+        }
+    }
     // @Override
     protected void doPost (HttpServletRequest request, HttpServletResponse response)
         throws IOException, ServletException {
@@ -171,26 +188,40 @@ public class SearchServlet extends HttpServlet{
                 //match keyword to boolean categories
                 //match keyword to numerical categories
 
-                // HashMap <String, ArrayList <String>> selectedCategories = request.getParameterValues("selectedCategories"); //prob need to figure out how to map right
+                //logic just to get the selected filter categories
+                ArrayList<String> categories = getFilterCategories();
+                Map<String, List<String>> selectedCategories = new HashMap<>();
 
-                // //this is turning into a really long where statment, should i use a subquery or something?
-                // for (String selectedCat : selectedCategories.keySet()){
-                //     query2 = query2 + " AND `" + selectedCat + "` = ";
-                //     for (int i = 0; i< selectedCategories.get(selectedCat).size(); i++){
-                //         String selectedValue = selectedCategories.get(selectedCat).get(i);
-                //         query2 = query2 + selectedValue;
-                //         if (i != (selectedCategories.get(selectedCat).size() -1)){
-                //             query2 = query2 + " AND ";
-                //         }
-                //     }
-                // }
+                for (String category : categories) {
+                    String[] vals = request.getParameterValues(category);
+
+                    if (vals != null) {
+                        selectedCategories.put(category, Arrays.asList(vals));
+                    }
+                }
+
+                //this is turning into a really long where statment, should i use a subquery or something?
+                for (String selectedCat : selectedCategories.keySet()){
+                    query2 = query2 + " AND `" + selectedCat + "` IN ( ";
+                    for (int i = 0; i< selectedCategories.get(selectedCat).size(); i++){
+                        String selectedValue = selectedCategories.get(selectedCat).get(i);
+                        query2 = query2 + selectedValue;
+                        if (i != (selectedCategories.get(selectedCat).size() -1)){
+                            query2 = query2 + " , ";
+                        }
+                        else{
+                            query2 = query2 + ")";
+                        }
+                    }
+                }
 
 
-    //             //we could also add code to transform searchInputs to booleans (ie, if it contains "wireless", remove it and transform to boolean; we could get the boolean keywords using the transformName method)
-    //             //we could also add code to transform strings with numerical inptus followed by units of measure (120 Hz) and match it to numerical columns
-    //             //----> another way to do this would be to remove all units of measure, and add a query to select the numerical data type (int, float) columns like query2, and compare all numbers against those columns
+                //we could also add code to transform searchInputs to booleans (ie, if it contains "wireless", remove it and transform to boolean; we could get the boolean keywords using the transformName method)
+                //we could also add code to transform strings with numerical inptus followed by units of measure (120 Hz) and match it to numerical columns
+                //----> another way to do this would be to remove all units of measure, and add a query to select the numerical data type (int, float) columns like query2, and compare all numbers against those columns
 
                 query2 = query2 + ";";
+                System.out.println ("SEARCH POST QUERY: " + query2);
                 //how to do fuzzy matching? should we even bother?
                 //it should also use these to be exact matches for each selected category name = selectedcategoryvalue1 or selectedcategoryvalue2 
                 
@@ -224,6 +255,7 @@ public class SearchServlet extends HttpServlet{
                 //request.setAttribute("pageTitle", pageTitle);
                 request.setAttribute("items", items);
                 //request.setAttribute ("cardStyle", cardStyle);
+                //request.setAttribute("categories", categories);
                 request.getRequestDispatcher("search.jsp").forward(request, response);
 
             }

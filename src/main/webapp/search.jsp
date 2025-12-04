@@ -379,9 +379,7 @@ public String transformBoolean (String booleanInt){
                     </div>
                     <% 
                         ArrayList<String> categories =  (ArrayList<String>) request.getAttribute("categories");
-                        Integer cat_count =  (Integer) request.getAttribute("categories_count");
                         System.out.println("Categories: " + categories);
-                        System.out.println("Count" + cat_count);
 
                         
                         HashMap<String, ArrayList<String>> categoryValues= (HashMap<String, ArrayList<String>>) request.getAttribute("categoryValues");
@@ -393,7 +391,7 @@ public String transformBoolean (String booleanInt){
                             <!--dynamically loop through and render the properties -->
                         <div class="filter-group">
                             <!--for each value in category, create a span and label-->
-                            <span class="filter-title"><%= transformName(category) %></span>
+                            <span class="filter-title" name="${category}"><%= transformName(category) %></span>
                             <%for (String categoryValue: categoryValues.get(category)){%>
                             <!--dynamically render the possible values for each property -->
                             <label class="filter-pill">
