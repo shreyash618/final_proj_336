@@ -254,6 +254,7 @@ public class SearchServlet extends HttpServlet{
                 System.out.println ("query2: " + query2);
                 //request.setAttribute("pageTitle", pageTitle);
                 request.setAttribute("items", items);
+                request.setAttribute("searched", true);
                 //request.setAttribute ("cardStyle", cardStyle);
                 //request.setAttribute("categories", categories);
                 request.getRequestDispatcher("search.jsp").forward(request, response);

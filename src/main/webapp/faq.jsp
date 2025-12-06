@@ -38,7 +38,7 @@
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            opacity: 0.9;
+            opacity: 0.8;
             pointer-events: none;
             z-index: 0;
         }
@@ -63,9 +63,12 @@
         .faq-container { 
             max-width: 1200px; 
             margin: 0 auto; 
-            padding: 0; 
+            padding: 30px; 
             position: relative;
             z-index: 1;
+            background: rgba(245, 247, 251, 0.99);
+            border-radius: 16px;
+            /*border: 1px solid rgba(230, 228, 220, 0.4);*/
         }
         
         .faq-container .faq-header { 
@@ -74,7 +77,8 @@
             align-items: center; 
             margin-bottom: 30px;
             padding: 25px 30px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            /*background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);*/
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(248, 249, 250, 0.99) 100%);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -98,7 +102,7 @@
             text-decoration: none; 
             border-radius: 8px; 
             font-weight: 600; 
-            font-size: 0.95rem;
+            font-size: 0.99rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 4px 12px rgba(107, 144, 128, 0.25);
         }
@@ -116,8 +120,7 @@
         .search-section { 
             margin: 30px 0; 
             padding: 25px; 
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -201,8 +204,7 @@
         .ask-section { 
             margin: 30px 0; 
             padding: 30px; 
-            background: linear-gradient(135deg, rgba(232, 245, 233, 0.95) 0%, rgba(200, 230, 201, 0.95) 100%);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, rgba(232, 245, 233, 0.99) 0%, rgba(200, 230, 201, 0.99) 100%);  /*0.99 to 0.75*/
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -302,8 +304,7 @@
             padding-bottom: 12px;*/
             padding: 18px 24px;
 
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.98);  /*0.98 to 0.75*/
             border-radius: 12px;
 
 
@@ -311,8 +312,7 @@
             font-weight: 700;
             letter-spacing: -0.01em;
             
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.98);  /*0.98 to 0.75*/
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9);
             border: 2px solid rgba(255, 255, 255, 0.9);
@@ -333,8 +333,7 @@
             margin-bottom: 20px; 
             border-radius: 12px; 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
@@ -345,7 +344,7 @@
         }
         
         .question-card.answered { 
-            background: linear-gradient(135deg, rgba(241, 248, 244, 0.95) 0%, rgba(232, 245, 233, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(241, 248, 244, 0.99) 0%, rgba(232, 245, 233, 0.99) 100%); /*0.99 to 0.75*/
             /*border-color: #81c784;*/
             box-shadow: 0 2px 8px rgba(129, 199, 132, 0.15);
         }
@@ -356,7 +355,7 @@
         }
         
         .question-card.unanswered { 
-            background: linear-gradient(135deg, rgba(255, 254, 247, 0.95) 0%, rgba(255, 249, 230, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(255, 254, 247, 0.99) 0%, rgba(255, 249, 230, 0.99) 100%); /*0.99 to 0.75*/
             /*border-color: #ffb74d;*/
             box-shadow: 0 2px 8px rgba(255, 183, 77, 0.15);
         }
@@ -414,8 +413,7 @@
         .question-answer { 
             margin-top: 15px; 
             padding: 18px; 
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.7); /*0.7 to 0.6*/
             border-left: 4px solid #6b9080; 
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -431,7 +429,7 @@
         .answer-text { 
             color: #2d3748; 
             line-height: 1.7;
-            font-size: 0.95rem;
+            font-size: 0.99rem;
             font-weight: 400;
         }
         
@@ -446,13 +444,13 @@
             padding: 60px 20px; 
             color: #718096;
             font-size: 1.1rem;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.99); /*0.99 to 0.75*/
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
         
         .login-prompt { 
-            background: linear-gradient(135deg, rgba(255, 243, 205, 0.95) 0%, rgba(255, 235, 179, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(255, 243, 205, 0.99) 0%, rgba(255, 235, 179, 0.99) 100%); /*0.99 to 0.75*/
             padding: 18px; 
             border-radius: 8px; 
             border-left: 4px solid #ffc107; 
@@ -476,8 +474,7 @@
         .filter-section {
             margin: 30px 0;
             padding: 20px 25px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.99);/*0.99 to 0.75*/
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.8);

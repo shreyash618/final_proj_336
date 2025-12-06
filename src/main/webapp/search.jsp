@@ -78,7 +78,7 @@ public String transformBoolean (String booleanInt){
             width: 100%;
             height: 260px;
             /*background: #334b31*/
-            background-image: url('./Images/backgrounds/aurora-borealis-banner.jpg'); 
+            background-image: url('./Images/backgrounds/search_page2.avif'); 
             background-size: cover;
             background-position: center;
             display: flex;
@@ -105,7 +105,7 @@ public String transformBoolean (String booleanInt){
             z-index: 1;
             
             --padding: 14px;
-            margin-left: 290px; /*filter + filter-margin + 10px*/
+            margin-left: 370px; /*filter + filter-margin + 10px*/
             width: 100%;
             max-width: 800px;
             display: flex;

@@ -47,6 +47,7 @@
             flex: 1;
             max-width: 600px;
             padding: 2rem;
+            text-align: center;
         }
         
         .main-title {
