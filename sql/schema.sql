@@ -94,11 +94,11 @@ CREATE TABLE Phone (
     os                VARCHAR(10) NOT NULL,
     storage_gb        INT NOT NULL,
     ram_gb            INT NOT NULL,
-    screen_size       FLOAT NOT NULL,
+    phone_screen_size       FLOAT NOT NULL,
     rear_camera_mp    INT NOT NULL,
     front_camera_mp   INT NOT NULL,
     isUnlocked        TINYINT(1) NOT NULL DEFAULT 0,
-    battery_life      INT NOT NULL,
+    phone_battery_life      INT NOT NULL,
     is5G              TINYINT(1) NOT NULL DEFAULT 0,
     CONSTRAINT fk_phone_item
         FOREIGN KEY (item_id) REFERENCES Item(item_id)
@@ -122,6 +122,7 @@ CREATE TABLE Headphones (
     hasMicrophone        TINYINT(1) NOT NULL DEFAULT 0,
     hasNoiseCancellation TINYINT(1) NOT NULL DEFAULT 0,
     cable_type           VARCHAR(10) NOT NULL,
+    phone_battery_life      INT NOT NULL,
     CONSTRAINT fk_headphones_item
         FOREIGN KEY (item_id) REFERENCES Item(item_id)
 );

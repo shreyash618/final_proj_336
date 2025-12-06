@@ -1,4 +1,4 @@
-package com.techbarn.webapp;
+/*package com.techbarn.webapp;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -153,3 +153,4 @@ public class BuyerCreateBidServlet extends HttpServlet {
         }
     }
 }
+*/

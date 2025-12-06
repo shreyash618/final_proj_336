@@ -38,22 +38,22 @@ public class CategoryServlet extends HttpServlet{
                 switch (categoryId) {
                     case 1:
                         pageTitle = "Phones";
-                        bannerImage = "Images/phone_banner.png";
+                        bannerImage = "Images/backgrounds/phone_banner_original.png";
                         cardStyle = "card-phone";
                         break;
                     case 2:
                         pageTitle = "TVs";
-                        bannerImage = "Images/tv_banner.jpg";
+                        bannerImage = "Images/backgrounds/tv_banner_cropped.jpg";
                         cardStyle = "card-tv";
                         break;
                     case 3:
                         pageTitle = "Headphones";
-                        bannerImage = "Images/headphones_banner.jpeg";
+                        bannerImage = "Images/backgrounds/headphones_banner_edited.jpeg";
                         cardStyle = "card-headphones";
                         break;
                     default:
                         pageTitle = "Phones";
-                        bannerImage = "Images/phone_banner.png";
+                        bannerImage = "Images/backgrounds/phone_banner_original.png";
                         cardStyle = "card-phone";
                         break;
                 }

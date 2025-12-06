@@ -21,7 +21,7 @@
   body, html {
     height: 100%; 
     width: 100%;
-    background: url('Images/devices4.jpg') no-repeat center center/cover;
+    background: url('Images/backgrounds/login_screen_background.jpg') no-repeat center center/cover;
     background-attachment: fixed;
     display: flex; 
     justify-content: center; 

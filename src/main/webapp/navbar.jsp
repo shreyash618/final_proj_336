@@ -18,6 +18,9 @@
         width: 100%;
         max-width: 100%;
     }
+    .navbar span{
+        margin-left: 5px;
+    }
 
     .company-logo {
         display: flex;
@@ -53,27 +56,29 @@
         color: #6b9080;
         text-decoration: none;
         font-weight: 500;
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 1rem;
         border-radius: 6px;
-        transition: background 0.3s ease;
+        transition: background 0.3s ease, color 0.3s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         line-height: 1.5;
         height: 100%;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
     }
 
     .nav-links a:hover {
         background-color: #6b9080;
         color: #fff;
     }
-    
     .nav-links img {
         height: 24px;
         width: auto;
         display: block;
         object-fit: contain;
-        margin-left: 5px;
+        text-align: center;
+        margin-bottom: 5px;
     }
     
     .nav-links a:hover img {
@@ -105,13 +110,13 @@
         </a>
 
         <ul class="nav-links">
-            <li><a href="category?categoryId=1">Phones <img src="Images/phone_icon.png"/></a></li>
-            <li><a href="category?categoryId=2">TVs <img src="Images/tv_icon.png"/></a></li>
-            <li><a href="category?categoryId=3">Headphones <img src="Images/headphones_icon.png"/></a></li>
-            <li><a href="search">Search<img src="Images/search_icon.png"/></a></li>
-            <li><a href="faq">FAQs <img src="Images/question_icon.png"/></a></li>
-            <li><a href="alert.jsp">Alerts <img src="Images/notification_icon.png"/></a></li>
-            <li><a href="account.jsp">My Account <img src="Images/settings_icon.png"/></a></li>
+            <li><a href="category?categoryId=1">Phones</a></li>
+            <li><a href="category?categoryId=2">TVs</a></li>
+            <li><a href="category?categoryId=3">Headphones</a></li>
+            <li><a href="search">Search</a></li>
+            <li><a href="faq">FAQs</a></li>
+            <li><a href="alert.jsp"><img src="Images/icons/notification_icon.png"/></a></li>
+            <li><a href="account.jsp">My Account</a></li>
         </ul>
 
         <a href="logout" class="logout-btn">Logout</a>
