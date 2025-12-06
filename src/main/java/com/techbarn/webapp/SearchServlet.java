@@ -295,7 +295,6 @@ public class SearchServlet extends HttpServlet{
                 List<String> booleanCategories = columnTypes.getOrDefault("boolean", new ArrayList<>());
                 List<String> numericCategories = columnTypes.getOrDefault("numeric", new ArrayList<>());
 
-                //match keyword to string categories
                 StringBuilder queryBuilder = new StringBuilder(
                     "SELECT * FROM Item i " +
                     "LEFT JOIN Phone p ON p.item_id = i.item_id " +
@@ -305,18 +304,149 @@ public class SearchServlet extends HttpServlet{
                 
                 // Track if WHERE clause has been added (shared across all loops)
                 boolean hasWhere = false;
+
+                //match keyword to numerical categories
+                List<Double> equalParams = new ArrayList<>(); //values can be int or float
+                Set<String> numericKeywords = new HashSet<>(); // Track which keywords are numeric
+
+                for (String kw : keywords) {
+                    if (kw != null && kw.matches("\\d+(\\.\\d+)?")) {
+                        equalParams.add(Double.parseDouble(kw));
+                        numericKeywords.add(kw); // Track numeric keywords to exclude from string search
+                    }
+                }
+
+                if (!equalParams.isEmpty() && !numericCategories.isEmpty()) {
+                    // adds WHERE or AND clause
+                    if (!hasWhere) {
+                        queryBuilder.append("WHERE ");
+                        hasWhere = true;
+                    } else {
+                        queryBuilder.append(" AND ");
+                    }
+                
+                    queryBuilder.append("(");
+                
+                    boolean first = true;
+                    for (String col : numericCategories) {
+                        for (Double equalParam : equalParams) {
+                            if (!first) queryBuilder.append(" OR ");
+                            queryBuilder.append("`").append(col).append("` = ?");
+                            first = false;
+                        }
+                    }
+                
+                    queryBuilder.append(")");
+                }
+                
+                //match keyword to boolean categories (hard-coded)
+                Set<String> boolTrueCols = new HashSet<>();
+                Set<String> boolFalseCols = new HashSet<>(); // for "wired" meaning isWireless = 0
+                Set<String> booleanKeywords = new HashSet<>(); // Track which keywords are boolean
+
+                for (String kw : keywords) {
+                    if (kw == null) continue;
+                    String k = kw.toLowerCase().trim();
+                    boolean isBooleanKeyword = false;
+
+                    if (k.equals("5g") && booleanCategories.contains("is5G")) {
+                        boolTrueCols.add("is5G");
+                        isBooleanKeyword = true;
+                    }
+
+                    if ((k.contains("wireless") || k.contains("bluetooth")) &&
+                        booleanCategories.contains("isWireless")) {
+                        boolTrueCols.add("isWireless");
+                        isBooleanKeyword = true;
+                    }
+
+                    if (k.equals("wired") && booleanCategories.contains("isWireless")) {
+                        boolFalseCols.add("isWireless");  // we will add "isWireless = 0"
+                        isBooleanKeyword = true;
+                    }
+
+                    if (k.equals("smart tv") && booleanCategories.contains("isSmartTv")) {
+                        boolTrueCols.add("isSmartTv");
+                        isBooleanKeyword = true;
+                    }
+
+                    if (k.equals("hdr") && booleanCategories.contains("isHdr")) {
+                        boolTrueCols.add("isHdr");
+                        isBooleanKeyword = true;
+                    }
+
+                    if (k.contains("microphone") && booleanCategories.contains("hasMicrophone")) {
+                        boolTrueCols.add("hasMicrophone");
+                        isBooleanKeyword = true;
+                    }
+
+                    if ((k.contains("noise cancelling") || k.contains("noise cancellation"))
+                        && booleanCategories.contains("hasNoiseCancellation")) {
+                        boolTrueCols.add("hasNoiseCancellation");
+                        isBooleanKeyword = true;
+                    }
+
+                    if (k.contains("unlocked") && booleanCategories.contains("isUnlocked")) {
+                        boolTrueCols.add("isUnlocked");
+                        isBooleanKeyword = true;
+                    }
+
+                    if (isBooleanKeyword) {
+                        booleanKeywords.add(kw); // Track boolean keywords to exclude from string search
+                    }
+                }
+
+                // Add boolean conditions to query
+                if (!boolTrueCols.isEmpty() || !boolFalseCols.isEmpty()) {
+                    if (!hasWhere) {
+                        queryBuilder.append("WHERE ");
+                        hasWhere = true;
+                    } else {
+                        queryBuilder.append(" AND ");
+                    }
+                    
+                    queryBuilder.append("(");
+                    boolean firstBool = true;
+                    
+                    for (String col : boolTrueCols) {
+                        if (!firstBool) queryBuilder.append(" OR ");
+                        queryBuilder.append("`").append(col).append("` = 1");
+                        firstBool = false;
+                    }
+                    
+                    for (String col : boolFalseCols) {
+                        if (!firstBool) queryBuilder.append(" OR ");
+                        queryBuilder.append("`").append(col).append("` = 0");
+                        firstBool = false;
+                    }
+                    
+                    queryBuilder.append(")");
+                }
+
+                //match keyword to string categories
+                // Filter out numeric and boolean keywords from string search
+                List<String> stringKeywords = new ArrayList<>();
+                for (String kw : keywords) {
+                    if (kw != null && !numericKeywords.contains(kw) && !booleanKeywords.contains(kw)) {
+                        stringKeywords.add(kw);
+                    }
+                }
                 
                 // store the String parameters for LIKE clauses
                 List<String> likeParams = new ArrayList<>();
                 
-                // build keyword conditions only if there are keywords
-                if (keywords.length > 0) {
-                    queryBuilder.append("WHERE ");
-                    hasWhere = true;
+                // build keyword conditions only if there are string keywords left
+                if (!stringKeywords.isEmpty()) {
+                    if (!hasWhere) {
+                        queryBuilder.append("WHERE ");
+                        hasWhere = true;
+                    } else {
+                        queryBuilder.append(" AND ");
+                    }
 
-                //for each keyword
-                    for (int i = 0; i < keywords.length; i++) {
-                        String keyword = keywords[i];
+                    //for each keyword
+                    for (int i = 0; i < stringKeywords.size(); i++) {
+                        String keyword = stringKeywords.get(i);
                         queryBuilder.append("CONCAT_WS(' ',");
                         //check against each category
                         for (int j = 0; j < stringCategories.size(); j++) {
@@ -330,83 +460,9 @@ public class SearchServlet extends HttpServlet{
                 
                         likeParams.add("%" + keyword + "%");
                 
-                        if (i != keywords.length - 1) {
+                        if (i != stringKeywords.size() - 1) {
                             queryBuilder.append(" AND ");
                         }
-                    }
-                }
-
-                //match keyword to numerical categories
-                List<Double> equalParams = new ArrayList<>(); //values can be int or float
-
-                for (String kw : keywords) {
-                    if (kw != null && kw.matches("\\d+(\\.\\d+)?")) equalParams.add(Double.parseDouble(kw));}
-
-
-                if (!equalParams.isEmpty() && !numericCategories.isEmpty()) {
-
-                    // adds WHERE or AND clause
-                    if (!hasWhere) {
-                        queryBuilder.append("WHERE ");
-                        hasWhere = true;
-                    } else {
-                        queryBuilder.append(" AND ");
-                    }
-                
-                    queryBuilder.append("(");
-                
-                    boolean first = true;
-                    for (String col : numericCategories) {
-                        for (int i = 0; i < equalParams.size(); i++) {
-                            if (!first) queryBuilder.append(" OR ");
-                            queryBuilder.append("`").append(col).append("` = ?");
-                            first = false;
-                        }
-                    }
-                
-                    queryBuilder.append(")");
-                }
-                
-                //match keyword to boolean categories (hard-coded)
-                Set<String> boolTrueCols = new HashSet<>();
-                Set<String> boolFalseCols = new HashSet<>(); // for "wired" meaning isWireless = 0
-
-                for (String kw : keywords) {
-                    if (kw == null) continue;
-                    String k = kw.toLowerCase().trim();
-
-                    if (k.equals("5g") && booleanCategories.contains("is5G")) {
-                        boolTrueCols.add("is5G");
-                    }
-
-                    if ((k.contains("wireless") || k.contains("bluetooth")) &&
-                        booleanCategories.contains("isWireless")) {
-                        boolTrueCols.add("isWireless");
-                    }
-
-                    if (k.equals("wired") && booleanCategories.contains("isWireless")) {
-                        boolFalseCols.add("isWireless");  // we will add "isWireless = 0"
-                    }
-
-                    if (k.equals("smart tv") && booleanCategories.contains("isSmartTv")) {
-                        boolTrueCols.add("isSmartTv");
-                    }
-
-                    if (k.equals("hdr") && booleanCategories.contains("isHdr")) {
-                        boolTrueCols.add("isHdr");
-                    }
-
-                    if (k.contains("microphone") && booleanCategories.contains("hasMicrophone")) {
-                        boolTrueCols.add("hasMicrophone");
-                    }
-
-                    if ((k.contains("noise cancelling") || k.contains("noise cancellation"))
-                        && booleanCategories.contains("hasNoiseCancellation")) {
-                        boolTrueCols.add("hasNoiseCancellation");
-                    }
-
-                    if (k.contains("unlocked") && booleanCategories.contains("isUnlocked")) {
-                        boolTrueCols.add("isUnlocked");
                     }
                 }
 
@@ -456,13 +512,18 @@ public class SearchServlet extends HttpServlet{
                 
                 // Set parameters for the PreparedStatement in the order they appear in the query
                 int paramIndex = 1;
-                // 1. Set LIKE parameters for keyword search (string categories)
+                // 1. Set equal parameters for numeric search (appears first in query)
+                // Must match the order: for each column, for each value
+                if (!equalParams.isEmpty() && !numericCategories.isEmpty()) {
+                    for (String col : numericCategories) {
+                        for (Double equalParam : equalParams) {
+                            ps2.setDouble(paramIndex++, equalParam);
+                        }
+                    }
+                }
+                // 2. Set LIKE parameters for keyword search (string categories)
                 for (String likeParam : likeParams) {
                     ps2.setString(paramIndex++, likeParam);
-                }
-                // 2. Set equal parameters for numeric search
-                for (Double equalParam : equalParams) {
-                    ps2.setDouble(paramIndex++, equalParam);
                 }
                 // 3. Set IN clause parameters for selected categories
                 for (String inParam : inParams) {
