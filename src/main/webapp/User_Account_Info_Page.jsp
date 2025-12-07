@@ -2,7 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -170,6 +169,44 @@
       margin-top: 4px;
     }
 
+    .inline-form {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .inline-form label {
+      font-size: 0.85rem;
+      color: #4b5563;
+      font-weight: 600;
+    }
+
+    .inline-form input[type="text"],
+    .inline-form input[type="password"] {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    .inline-form button {
+      align-self: flex-start;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: #6366f1;
+      color: #ffffff;
+      margin-top: 4px;
+    }
+
+    .inline-form button:hover {
+      background: #4f46e5;
+    }
+
     @media (max-width: 640px) {
       .card {
         margin: 1rem;
@@ -184,7 +221,6 @@
 <body>
 
 <%
-
     Integer userId = null;
     Object sessionUserIdObj = session.getAttribute("userId");
 
@@ -207,17 +243,68 @@
     String successMessage = null;
     boolean accountDeleted = false;
 
+    // ---------- inline login on this page ----------
     if ("POST".equalsIgnoreCase(request.getMethod())) {
         String action = request.getParameter("action");
-        if ("delete".equals(action) && userId != null) {
 
+        if ("login".equals(action) && userId == null) {
+            String loginUsername = request.getParameter("loginUsername");
+            String loginPassword = request.getParameter("loginPassword");
+
+            if (loginUsername == null || loginUsername.trim().isEmpty()
+             || loginPassword == null || loginPassword.trim().isEmpty()) {
+                errorMessage = "Username and password are required.";
+            } else {
+                Connection conLogin = null;
+                PreparedStatement psLogin = null;
+                ResultSet rsLogin = null;
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+                    String user = "root";
+                    String pass = "password123";
+
+                    conLogin = DriverManager.getConnection(url, user, pass);
+
+                    String sqlLogin =
+                        "SELECT user_id FROM `User` WHERE username = ? AND password = ?";
+                    psLogin = conLogin.prepareStatement(sqlLogin);
+                    psLogin.setString(1, loginUsername.trim());
+                    psLogin.setString(2, loginPassword.trim());
+                    rsLogin = psLogin.executeQuery();
+
+                    if (rsLogin.next()) {
+                        userId = rsLogin.getInt("user_id");
+                        session.setAttribute("userId", userId);
+                        successMessage = "Logged in successfully.";
+                        errorMessage = null;
+                    } else {
+                        errorMessage = "Invalid username or password.";
+                    }
+                } catch (Exception e) {
+                    errorMessage = "Error during login: " + e.getMessage();
+                } finally {
+                    try { if (rsLogin != null) rsLogin.close(); } catch (Exception ignore) {}
+                    try { if (psLogin != null) psLogin.close(); } catch (Exception ignore) {}
+                    try { if (conLogin != null) conLogin.close(); } catch (Exception ignore) {}
+                }
+            }
+        }
+
+        // delete account
+        if ("delete".equals(action) && userId != null) {
             Connection con = null;
             PreparedStatement psDel = null;
 
             try {
-                con = ApplicationDB.getConnection();
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+                String user = "root";
+                String pass = "password123";
 
-                String sqlDel = "DELETE FROM User WHERE user_id = ?";
+                con = DriverManager.getConnection(url, user, pass);
+
+                String sqlDel = "DELETE FROM `User` WHERE user_id = ?";
                 psDel = con.prepareStatement(sqlDel);
                 psDel.setInt(1, userId);
 
@@ -233,7 +320,7 @@
                 errorMessage = "Error deleting account: " + e.getMessage();
             } finally {
                 try { if (psDel != null) psDel.close(); } catch (Exception ignore) {}
-                try { if (con  != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
+                try { if (con  != null) con.close(); } catch (Exception ignore) {}
             }
         }
     }
@@ -248,20 +335,30 @@
 
     if (!accountDeleted) {
         if (userId == null) {
-            errorMessage = (errorMessage == null)
-                    ? "No user is logged in. Please log in first."
-                    : errorMessage;
+            if (errorMessage == null) {
+                errorMessage = "No user is logged in. Please log in first.";
+            }
         } else {
             Connection con = null;
             PreparedStatement ps = null;
             ResultSet rs = null;
 
             try {
-                con = ApplicationDB.getConnection();
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
+                String user = "root";
+                String pass = "password123";
+
+                con = DriverManager.getConnection(url, user, pass);
 
                 String sql =
-                    "SELECT user_id, username, first_name, last_name, email, phone, address, role " +
-                    "FROM User WHERE user_id = ?";
+                    "SELECT u.user_id, u.username, u.first_name, u.last_name, " +
+                    "       u.email, u.phone_no, " +
+                    "       a.street_name, a.apt_no, a.city, a.state, a.zip, " +
+                    "       u.isBuyer, u.isSeller " +
+                    "FROM `User` u " +
+                    "LEFT JOIN Address a ON u.address_id = a.address_id " +
+                    "WHERE u.user_id = ?";
 
                 ps = con.prepareStatement(sql);
                 ps.setInt(1, userId);
@@ -272,9 +369,34 @@
                     firstName = rs.getString("first_name");
                     lastName  = rs.getString("last_name");
                     email     = rs.getString("email");
-                    phone     = rs.getString("phone");
-                    address   = rs.getString("address");
-                    role      = rs.getString("role");
+                    phone     = rs.getString("phone_no");
+
+                    String street = rs.getString("street_name");
+                    String apt    = rs.getString("apt_no");
+                    String city   = rs.getString("city");
+                    String state  = rs.getString("state");
+                    String zip    = rs.getString("zip");
+
+                    StringBuilder addr = new StringBuilder();
+                    if (street != null) addr.append(street);
+                    if (apt != null && !apt.isEmpty()) addr.append(", ").append(apt);
+                    if (city != null) addr.append(", ").append(city);
+                    if (state != null) addr.append(", ").append(state);
+                    if (zip != null) addr.append(" ").append(zip);
+                    address = addr.toString();
+
+                    boolean isBuyer  = rs.getBoolean("isBuyer");
+                    boolean isSeller = rs.getBoolean("isSeller");
+
+                    if (isBuyer && isSeller) {
+                        role = "buyer,seller";
+                    } else if (isBuyer) {
+                        role = "buyer";
+                    } else if (isSeller) {
+                        role = "seller";
+                    } else {
+                        role = "user";
+                    }
                 } else {
                     errorMessage = "No account found for user ID " + userId;
                 }
@@ -284,7 +406,7 @@
             } finally {
                 try { if (rs != null) rs.close(); } catch (Exception ignore) {}
                 try { if (ps != null) ps.close(); } catch (Exception ignore) {}
-                try { if (con != null) ApplicationDB.closeConnection(con); } catch (Exception ignore) {}
+                try { if (con != null) con.close(); } catch (Exception ignore) {}
             }
         }
     }
@@ -300,6 +422,23 @@
 
   <% if (successMessage != null) { %>
     <div class="message success"><%= successMessage %></div>
+  <% } %>
+
+  <!-- inline login form when not logged in -->
+  <% if (!accountDeleted && username == null) { %>
+    <form method="post" action="User_Account_Info_Page.jsp" class="inline-form">
+      <input type="hidden" name="action" value="login" />
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" name="loginUsername" required />
+
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" name="loginPassword" required />
+
+      <button type="submit">Log In</button>
+      <p class="small-muted">
+        Log in here to view and manage your account information.
+      </p>
+    </form>
   <% } %>
 
   <% if (!accountDeleted && errorMessage == null && username != null) { %>
@@ -333,7 +472,7 @@
 
     <div class="section-title">Account Type</div>
     <div>
-      <% 
+      <%
          String roleLower = (role == null) ? "" : role.toLowerCase(Locale.ROOT);
       %>
       <% if (roleLower.contains("buyer")) { %>
@@ -351,11 +490,18 @@
     </div>
 
     <div class="actions">
-      <form method="post" action="User_Account_Info_Page.jsp"
-            onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
-        <input type="hidden" name="action" value="delete" />
-        <button type="submit" class="danger-button">Delete My Account</button>
-      </form>
+	  <form method="post" action="User_Account_Info_Page.jsp"
+	        onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+	    <input type="hidden" name="action" value="delete" />
+	    <button type="submit" class="danger-button">Delete My Account</button>
+	  </form>
+		
+	  <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+	    <a href="welcome.jsp" class="back-link">Back to Home</a>
+	    <a href="login.jsp" class="back-link">Back to Login</a>
+	  </div>
+	</div>
+
 
       <a href="welcome.jsp" class="back-link">Back to Home</a>
     </div>
