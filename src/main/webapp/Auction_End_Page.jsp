@@ -190,6 +190,7 @@
 
     boolean hasBids = false;
     String winnerUsername = null;
+    Integer winnerUserId = null;
     java.math.BigDecimal winningAmount = null;
 
     if (auctionIdParam != null && !auctionIdParam.trim().isEmpty()) {
@@ -200,18 +201,7 @@
         ResultSet rsWinner = null;
 
         try {
-<<<<<<< HEAD
             con = ApplicationDB.getConnection();
-=======
-            Class.forName("com.mysql.jdbc.Driver");
-
-            String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-            String user = "root";
-            String pass = "password123";
-
-            con = DriverManager.getConnection(url, user, pass);
-
->>>>>>> 7ebfe2bac967997540a0914eef4209283e218118
             int auctionIdInt = Integer.parseInt(auctionIdParam.trim());
 
             String sqlAuction =
@@ -241,7 +231,7 @@
                 isEnded = timeEnded || statusEnded;
 
                 String sqlWinner =
-                    "SELECT b.amount, u.username " +
+                    "SELECT b.amount, u.username, u.user_id " +
                     "FROM Bid b " +
                     "JOIN `User` u ON b.buyer_id = u.user_id " +
                     "WHERE b.auction_id = ? " +
@@ -256,6 +246,7 @@
                     hasBids = true;
                     winningAmount = rsWinner.getBigDecimal("amount");
                     winnerUsername = rsWinner.getString("username");
+                    winnerUserId = rsWinner.getInt("user_id");
                 }
             } else {
                 errorMessage = "No auction found with ID " + auctionIdParam;
@@ -328,7 +319,19 @@
       <div class="info-box">
         <div class="info-row">
           <span>Winner</span>
-          <span class="winner-name"><%= winnerUsername %></span>
+          <span class="winner-name">
+            <% if (winnerUserId != null) { %>
+              <a href="userAuctions?viewUserId=<%= winnerUserId %>" 
+                 style="color: #6366f1; text-decoration: none; font-weight: 700; cursor: pointer;"
+                 onmouseover="this.style.textDecoration='underline'; this.style.color='#4f46e5';"
+                 onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';"
+                 title="View <%= winnerUsername %>'s auction history">
+                <%= winnerUsername %>
+              </a>
+            <% } else { %>
+              <%= winnerUsername %>
+            <% } %>
+          </span>
         </div>
         <div class="info-row">
           <span>Winning Bid</span>
@@ -336,7 +339,18 @@
         </div>
       </div>
       <div class="message success" style="margin-top:10px;">
-        The auction has ended. <span class="winner-name"><%= winnerUsername %></span>
+        The auction has ended. 
+        <% if (winnerUserId != null) { %>
+          <a href="userAuctions?viewUserId=<%= winnerUserId %>" 
+             style="color: #047857; text-decoration: none; font-weight: 700; cursor: pointer;"
+             onmouseover="this.style.textDecoration='underline';"
+             onmouseout="this.style.textDecoration='none';"
+             title="View <%= winnerUsername %>'s auction history">
+            <span class="winner-name"><%= winnerUsername %></span>
+          </a>
+        <% } else { %>
+          <span class="winner-name"><%= winnerUsername %></span>
+        <% } %>
         won the item "<%= itemTitle %>" with a bid of
         <span class="amount">$<%= winningAmount %></span>.
       </div>

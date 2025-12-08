@@ -557,7 +557,7 @@
                                     PreparedStatement bidStmt = null;
                                     ResultSet bidRs = null;
                                     try {
-                                        String bidQuery = "SELECT b.amount, b.bid_time, u.username " +
+                                        String bidQuery = "SELECT b.amount, b.bid_time, u.username, u.user_id " +
                                             "FROM Bid b JOIN User u ON b.buyer_id = u.user_id " +
                                             "WHERE b.auction_id = ? ORDER BY b.bid_time DESC";
                                         bidStmt = conn.prepareStatement(bidQuery);
@@ -568,9 +568,18 @@
                                             double amount = bidRs.getDouble("amount");
                                             Timestamp bidTime = bidRs.getTimestamp("bid_time");
                                             String username = bidRs.getString("username");
+                                            int userId = bidRs.getInt("user_id");
                                 %>
                                 <div class="bid-item">
-                                    <strong>$<%= String.format("%.2f", amount) %></strong> by <%= username %> at <%= bidTime %>
+                                    <strong>$<%= String.format("%.2f", amount) %></strong> by 
+                                    <a href="userAuctions?viewUserId=<%= userId %>" 
+                                       style="color: #6366f1; text-decoration: none; font-weight: 600; cursor: pointer;"
+                                       onmouseover="this.style.textDecoration='underline'; this.style.color='#4f46e5';"
+                                       onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';"
+                                       title="View <%= username %>'s auction history">
+                                      <%= username %>
+                                    </a>
+                                    at <%= bidTime %>
                                 </div>
                                 <%
                                         }

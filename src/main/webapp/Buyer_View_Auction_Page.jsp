@@ -502,7 +502,7 @@
 
             if (auctionInfo != null) {
                 String sqlBids =
-                    "SELECT b.bid_no, b.amount, b.bid_time, b.status, u.username " +
+                    "SELECT b.bid_no, b.amount, b.bid_time, b.status, u.username, u.user_id " +
                     "FROM Bid b " +
                     "JOIN `User` u ON b.buyer_id = u.user_id " +
                     "WHERE b.auction_id = ? " +
@@ -519,6 +519,7 @@
                     row.put("bid_time", rsBids.getTimestamp("bid_time"));
                     row.put("status", rsBids.getString("status"));
                     row.put("buyer_username", rsBids.getString("username"));
+                    row.put("buyer_user_id", rsBids.getInt("user_id"));
                     bidHistory.add(row);
                 }
 
@@ -740,7 +741,22 @@
               for (Map<String, Object> bid : bidHistory) { 
             %>
               <li>
-                $<%= bid.get("amount") %> by <%= bid.get("buyer_username") %>
+                $<%= bid.get("amount") %> by 
+                <% 
+                  Object buyerUserIdObj = bid.get("buyer_user_id");
+                  if (buyerUserIdObj != null) {
+                    Integer buyerUserId = (Integer) buyerUserIdObj;
+                %>
+                  <a href="userAuctions?viewUserId=<%= buyerUserId %>" 
+                     style="color: #6366f1; text-decoration: none; font-weight: 600; cursor: pointer;"
+                     onmouseover="this.style.textDecoration='underline'; this.style.color='#4f46e5';"
+                     onmouseout="this.style.textDecoration='none'; this.style.color='#6366f1';"
+                     title="View <%= bid.get("buyer_username") %>'s auction history">
+                    <%= bid.get("buyer_username") %>
+                  </a>
+                <% } else { %>
+                  <%= bid.get("buyer_username") %>
+                <% } %>
                 <span class="tag"><%= bid.get("status") %></span><br/>
                 <span class="small-muted">
                   Bid #<%= bid.get("bid_no") %> · <%= bid.get("bid_time") %>

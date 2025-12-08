@@ -83,6 +83,38 @@
         </div>
 
         <div class="report-section">
+            <h2>Earnings by Item Type</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item Type</th>
+                            <th>Earnings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                            List<Map<String,Object>> byItemType = (List<Map<String,Object>>) request.getAttribute("byItemType");
+                            if (byItemType != null && !byItemType.isEmpty()) {
+                                DecimalFormat df = new DecimalFormat("#,##0.00");
+                                for (Map<String,Object> r : byItemType) {
+                        %>
+                        <tr>
+                            <td><%=r.get("item_type")%></td>
+                            <td class="earnings">$<%=df.format(r.get("earnings"))%></td>
+                        </tr>
+                        <% 
+                                }
+                            } else {
+                        %>
+                        <tr><td colspan="2" class="no-data">No data available</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-section">
             <h2>Earnings by Seller</h2>
             <div class="table-wrapper">
                 <table>
@@ -139,6 +171,40 @@
                             } else {
                         %>
                         <tr><td colspan="2" class="no-data">No data available</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="report-section">
+            <h2>Best Buyers</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Buyer</th>
+                            <th>Total Spent</th>
+                            <th>Auctions Won</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                            List<Map<String,Object>> bestBuyers = (List<Map<String,Object>>) request.getAttribute("bestBuyers");
+                            if (bestBuyers != null && !bestBuyers.isEmpty()) {
+                                DecimalFormat df = new DecimalFormat("#,##0.00");
+                                for (Map<String,Object> r : bestBuyers) {
+                        %>
+                        <tr>
+                            <td><%=r.get("buyer")%></td>
+                            <td class="earnings">$<%=df.format(r.get("total_spent"))%></td>
+                            <td><%=r.get("auctions_won")%></td>
+                        </tr>
+                        <% 
+                                }
+                            } else {
+                        %>
+                        <tr><td colspan="3" class="no-data">No data available</td></tr>
                         <% } %>
                     </tbody>
                 </table>

@@ -30,17 +30,60 @@ public class ReportDAO {
     }
 
     public static List<Map<String,Object>> earningsByItem() {
-        String sql = "SELECT i.item_id, i.title, COALESCE(SUM(b.amount),0) AS earnings " +
-                "FROM Auction a JOIN Item i ON a.item_id = i.item_id " +
-                "LEFT JOIN Bid b ON b.auction_id = a.auction_id " +
-                "WHERE a.status = 'closed' GROUP BY i.item_id, i.title ORDER BY earnings DESC";
+        // Only count the winning bid (max bid) per closed auction
+        String sql = "SELECT i.item_id, i.title, COALESCE(SUM(winning_bid.max_bid),0) AS earnings " +
+                "FROM Auction a " +
+                "JOIN Item i ON a.item_id = i.item_id " +
+                "LEFT JOIN ( " +
+                "    SELECT auction_id, MAX(amount) AS max_bid " +
+                "    FROM Bid " +
+                "    WHERE status = 'ACTIVE' " +
+                "    GROUP BY auction_id " +
+                ") winning_bid ON a.auction_id = winning_bid.auction_id " +
+                "WHERE a.status = 'closed' " +
+                "GROUP BY i.item_id, i.title " +
+                "ORDER BY earnings DESC";
         return runList(sql);
     }
 
     public static List<Map<String,Object>> earningsBySeller() {
-        String sql = "SELECT u.user_id, CONCAT(u.first_name,' ',u.last_name) AS seller, COALESCE(SUM(b.amount),0) AS earnings " +
-                "FROM Auction a JOIN `User` u ON a.seller_id = u.user_id LEFT JOIN Bid b ON b.auction_id = a.auction_id " +
-                "WHERE a.status='closed' GROUP BY u.user_id, seller ORDER BY earnings DESC";
+        // Only count the winning bid (max bid) per closed auction
+        String sql = "SELECT u.user_id, CONCAT(u.first_name,' ',u.last_name) AS seller, COALESCE(SUM(winning_bid.max_bid),0) AS earnings " +
+                "FROM Auction a " +
+                "JOIN `User` u ON a.seller_id = u.user_id " +
+                "LEFT JOIN ( " +
+                "    SELECT auction_id, MAX(amount) AS max_bid " +
+                "    FROM Bid " +
+                "    WHERE status = 'ACTIVE' " +
+                "    GROUP BY auction_id " +
+                ") winning_bid ON a.auction_id = winning_bid.auction_id " +
+                "WHERE a.status = 'closed' " +
+                "GROUP BY u.user_id, seller " +
+                "ORDER BY earnings DESC";
+        return runList(sql);
+    }
+
+    public static List<Map<String,Object>> earningsByItemType() {
+        // Group earnings by category_id (1=Phone, 2=TV, 3=Headphones)
+        String sql = "SELECT " +
+                "    CASE i.category_id " +
+                "        WHEN 1 THEN 'Phone' " +
+                "        WHEN 2 THEN 'TV' " +
+                "        WHEN 3 THEN 'Headphones' " +
+                "        ELSE 'Unknown' " +
+                "    END AS item_type, " +
+                "    COALESCE(SUM(winning_bid.max_bid),0) AS earnings " +
+                "FROM Auction a " +
+                "JOIN Item i ON a.item_id = i.item_id " +
+                "LEFT JOIN ( " +
+                "    SELECT auction_id, MAX(amount) AS max_bid " +
+                "    FROM Bid " +
+                "    WHERE status = 'ACTIVE' " +
+                "    GROUP BY auction_id " +
+                ") winning_bid ON a.auction_id = winning_bid.auction_id " +
+                "WHERE a.status = 'closed' " +
+                "GROUP BY i.category_id " +
+                "ORDER BY earnings DESC";
         return runList(sql);
     }
 
@@ -48,6 +91,27 @@ public class ReportDAO {
         String sql = "SELECT i.item_id, i.title, COUNT(t.trans_id) AS sold_count " +
                 "FROM `Transaction` t JOIN Auction a ON t.auction_id = a.auction_id JOIN Item i ON a.item_id = i.item_id " +
                 "GROUP BY i.item_id, i.title ORDER BY sold_count DESC";
+        return runList(sql);
+    }
+
+    public static List<Map<String,Object>> bestBuyers() {
+        // Find buyers who have spent the most (using Transaction table and winning bid amounts)
+        String sql = "SELECT " +
+                "    u.user_id, " +
+                "    CONCAT(u.first_name,' ',u.last_name) AS buyer, " +
+                "    COALESCE(SUM(winning_bid.max_bid),0) AS total_spent, " +
+                "    COUNT(DISTINCT t.auction_id) AS auctions_won " +
+                "FROM `User` u " +
+                "INNER JOIN `Transaction` t ON u.user_id = t.buyer_id " +
+                "LEFT JOIN ( " +
+                "    SELECT auction_id, MAX(amount) AS max_bid " +
+                "    FROM Bid " +
+                "    WHERE status = 'ACTIVE' " +
+                "    GROUP BY auction_id " +
+                ") winning_bid ON t.auction_id = winning_bid.auction_id " +
+                "WHERE u.isBuyer = 1 " +
+                "GROUP BY u.user_id, buyer " +
+                "ORDER BY total_spent DESC";
         return runList(sql);
     }
 
