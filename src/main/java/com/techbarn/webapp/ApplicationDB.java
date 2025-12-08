@@ -12,7 +12,7 @@ public class ApplicationDB {
 
 	public static Connection getConnection() throws SQLException {
 		
-		//Create a connection string with proper encoding
+		// Create a connection string with proper encoding
 		String connectionUrl = "jdbc:mysql://localhost:3306/tech_barn"
 				+ "?useUnicode=true"
 				+ "&useSSL=false";
@@ -26,8 +26,8 @@ public class ApplicationDB {
 		}
 		
 		try {
-			//Create a connection to your DB - use your own credentials
-			connection = DriverManager.getConnection(connectionUrl, "root", "2412827@Sai");
+			//Create a connection to your DB
+			connection = DriverManager.getConnection(connectionUrl, "root", "password123");
 			if (connection == null) {
 				throw new SQLException("Failed to make connection!");
 			}
