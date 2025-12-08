@@ -1,4 +1,4 @@
-/*package com.techbarn.webapp;
+package com.techbarn.webapp;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,11 +17,6 @@ import java.sql.*;
 )
 public class BuyerCreateBidServlet extends HttpServlet {
 
-    private static final String DB_URL  =
-            "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "saad2012";
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -34,7 +29,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
 
             request.setAttribute("errorMessage",
                     "Auction ID and Bid Amount are required.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
             return;
         }
@@ -47,7 +42,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage",
                     "Invalid number format for auction ID or bid amount.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
             return;
         }
@@ -75,8 +70,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
         ResultSet rs = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+            con = ApplicationDB.getConnection();
 
             String checkSql =
                     "SELECT a.minimum_price, a.starting_price, a.increment, " +
@@ -93,7 +87,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
             if (!rs.next()) {
                 request.setAttribute("errorMessage",
                         "Auction " + auctionId + " was not found.");
-                request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+                request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                        .forward(request, response);
                 return;
             }
@@ -106,7 +100,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
                 request.setAttribute("errorMessage",
                         "Your bid must be at least the minimum price ($"
                                 + minimumPrice + ").");
-                request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+                request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                        .forward(request, response);
                 return;
             }
@@ -117,7 +111,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
                     request.setAttribute("errorMessage",
                             "Your bid must be at least current price + increment (>= $"
                                     + minAllowed + ").");
-                    request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+                    request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                            .forward(request, response);
                     return;
                 }
@@ -137,13 +131,13 @@ public class BuyerCreateBidServlet extends HttpServlet {
 
             request.setAttribute("successMessage",
                     "Your bid of $" + bidAmount + " has been placed.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                    .forward(request, response);
 
         } catch (Exception e) {
             request.setAttribute("errorMessage",
                     "Error placing bid: " + e.getMessage());
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
         } finally {
             try { if (rs != null) rs.close(); } catch (Exception ignored) {}
@@ -153,4 +147,3 @@ public class BuyerCreateBidServlet extends HttpServlet {
         }
     }
 }
-*/

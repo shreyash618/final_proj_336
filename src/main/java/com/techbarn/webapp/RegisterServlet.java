@@ -31,8 +31,22 @@ public class RegisterServlet extends HttpServlet {
                 String password = request.getParameter("password");
                 String phone = request.getParameter("tel");  // JSP uses "tel" as name
                 String dob = request.getParameter("dob");
+                
+                // Get buyer/seller checkboxes
+                String isBuyerParam = request.getParameter("isBuyer");
+                String isSellerParam = request.getParameter("isSeller");
+                int isBuyer = (isBuyerParam != null && isBuyerParam.equals("1")) ? 1 : 0;
+                int isSeller = (isSellerParam != null && isSellerParam.equals("1")) ? 1 : 0;
 
                 String errorMessage = null;
+                
+                // Validate at least one role is selected
+                if (isBuyer == 0 && isSeller == 0) {
+                    errorMessage = "Please select at least one account type (Buyer or Seller).";
+                    request.setAttribute("errorMessage", errorMessage);
+                    request.getRequestDispatcher("register.jsp").forward(request, response);
+                    return;
+                }
 
                 // Validate required fields
                 if (firstName == null || firstName.trim().isEmpty() ||
@@ -113,7 +127,7 @@ public class RegisterServlet extends HttpServlet {
                 LocalDate currentDate = LocalDate.now();
                 java.sql.Date sqlDate = java.sql.Date.valueOf(currentDate);
                 
-                query = "INSERT INTO `User` (first_name, last_name, created_at, email, phone_no, username, password, dob, address_id, isBuyer, isSeller, rating) VALUES (?,?,?,?,?,?,?,?,NULL,1,0,NULL)";
+                query = "INSERT INTO `User` (first_name, last_name, created_at, email, phone_no, username, password, dob, address_id, isBuyer, isSeller, rating) VALUES (?,?,?,?,?,?,?,?,NULL,?,?,NULL)";
                 
                 ps = con.prepareStatement(query);
                 ps.setString(1, firstName.trim());
@@ -135,6 +149,10 @@ public class RegisterServlet extends HttpServlet {
                 } else {
                     ps.setDate(8, null);
                 }
+                
+                // Set buyer and seller flags
+                ps.setInt(9, isBuyer);
+                ps.setInt(10, isSeller);
                 
                 int rowsAffected = ps.executeUpdate(); // Use executeUpdate for INSERT
 

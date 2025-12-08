@@ -94,17 +94,32 @@ public class LoginServlet extends HttpServlet {
             ResultSet rsUser = psUser.executeQuery();
 
             if (rsUser.next()) {
+                boolean isBuyer = rsUser.getBoolean("isBuyer");
+                boolean isSeller = rsUser.getBoolean("isSeller");
+                
                 session.setAttribute("username", username);
                 session.setAttribute("role", "user");
                 session.setAttribute("user_id", rsUser.getInt("user_id"));
                 session.setAttribute("first_name", rsUser.getString("first_name"));
                 session.setAttribute("last_name", rsUser.getString("last_name"));
+                session.setAttribute("isBuyer", isBuyer);
+                session.setAttribute("isSeller", isSeller);
 
                 rsUser.close();
                 psUser.close();
                 ApplicationDB.closeConnection(con);
 
-                response.sendRedirect("welcome.jsp");
+                // Redirect based on user roles
+                if (isBuyer && isSeller) {
+                    // Both roles: go to role selection page
+                    response.sendRedirect("role_selection.jsp");
+                } else if (isSeller) {
+                    // Seller only: go to seller homepage
+                    response.sendRedirect("sellerhomepage.jsp");
+                } else {
+                    // Buyer only: go to welcome page
+                    response.sendRedirect("welcome.jsp");
+                }
                 return;
             }
 

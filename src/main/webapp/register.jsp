@@ -176,6 +176,44 @@
     display: none !important; 
   }
   
+  .role-selection {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    text-align: left;
+  }
+  
+  .role-selection h3 {
+    font-size: 0.95rem;
+    color: #4a5568;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  
+  .checkbox-group {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #2d3748;
+  }
+  
+  .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
+  }
+  
   @media(max-width: 480px){ 
     .form-box { 
       padding: 2rem 1.5rem; 
@@ -215,6 +253,19 @@
 
         <input type="password" id="register-password" name="password" placeholder="Password *" required class="form-input">
 
+        <div class="role-selection">
+          <h3>Select Account Type: <span class="required">*</span></h3>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="isBuyer" id="isBuyer" value="1" checked>
+              <span>Buyer</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="isSeller" id="isSeller" value="1">
+              <span>Seller</span>
+            </label>
+          </div>
+        </div>
         
         <button id="register-btn" class="submit-button">Register</button>
 

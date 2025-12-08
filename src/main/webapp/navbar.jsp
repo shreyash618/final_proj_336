@@ -116,7 +116,22 @@
             <li><a href="search">Search</a></li>
             <li><a href="faq">FAQs</a></li>
             <li><a href="alert.jsp"><img src="Images/icons/notification_icon.png"/></a></li>
-            <li><a href="account.jsp">My Account</a></li>
+            <li><a href="User_Account_Info_Page.jsp">My Account</a></li>
+            <% 
+                Object isSellerObj = session.getAttribute("isSeller");
+                boolean showSellerLinks = false;
+                if (isSellerObj != null) {
+                    if (isSellerObj instanceof Boolean) {
+                        showSellerLinks = (Boolean) isSellerObj;
+                    } else if (isSellerObj instanceof Integer) {
+                        showSellerLinks = ((Integer) isSellerObj) == 1;
+                    }
+                }
+                if (showSellerLinks) { 
+            %>
+            <li><a href="sellerhomepage.jsp">Seller Dashboard</a></li>
+            <li><a href="createauction.jsp">Create Auction</a></li>
+            <% } %>
         </ul>
 
         <a href="logout" class="logout-btn">Logout</a>

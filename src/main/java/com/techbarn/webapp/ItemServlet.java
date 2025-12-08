@@ -122,15 +122,33 @@ public class ItemServlet extends HttpServlet{
                     }
                     item.setImagePath(imagePath);
                 }
-                rs.close();
-                ps.close();
-                ApplicationDB.closeConnection(con);
                 
                 if (item == null) {
+                    rs.close();
+                    ps.close();
+                    ApplicationDB.closeConnection(con);
                     request.setAttribute("errorMessage", "Item not found.");
                     request.getRequestDispatcher("category.jsp").forward(request, response);
                     return;
                 }
+                
+                // Query for active auctions for this item
+                String auctionQuery = "SELECT auction_id, status, end_time FROM Auction WHERE item_id = ? AND status = 'active' ORDER BY auction_id DESC LIMIT 1";
+                PreparedStatement psAuction = con.prepareStatement(auctionQuery);
+                psAuction.setInt(1, itemId);
+                ResultSet rsAuction = psAuction.executeQuery();
+                
+                if (rsAuction.next()) {
+                    request.setAttribute("auctionId", rsAuction.getInt("auction_id"));
+                    request.setAttribute("auctionStatus", rsAuction.getString("status"));
+                    request.setAttribute("auctionEndTime", rsAuction.getTimestamp("end_time"));
+                }
+                
+                rsAuction.close();
+                psAuction.close();
+                rs.close();
+                ps.close();
+                ApplicationDB.closeConnection(con);
                 
                 request.setAttribute("item", item);
                 request.getRequestDispatcher("item.jsp").forward(request, response);
