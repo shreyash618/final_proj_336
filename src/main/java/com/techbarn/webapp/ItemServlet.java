@@ -152,13 +152,33 @@ public class ItemServlet extends HttpServlet{
                 
                 rsAuction.close();
                 psAuction.close();
-                ApplicationDB.closeConnection(con);
                 
                 if (item == null) {
+                    rs.close();
+                    ps.close();
+                    ApplicationDB.closeConnection(con);
                     request.setAttribute("errorMessage", "Item not found.");
                     request.getRequestDispatcher("category.jsp").forward(request, response);
                     return;
                 }
+                
+                // Query for active auctions for this item
+                String activeAuctionQuery = "SELECT auction_id, status, end_time FROM Auction WHERE item_id = ? AND status = 'ACTIVE' ORDER BY auction_id DESC LIMIT 1";
+                PreparedStatement psActiveAuction = con.prepareStatement(activeAuctionQuery);
+                psActiveAuction.setInt(1, itemId);
+                ResultSet rsActiveAuction = psActiveAuction.executeQuery();
+                
+                if (rsActiveAuction.next()) {
+                    request.setAttribute("auctionId", rsActiveAuction.getInt("auction_id"));
+                    request.setAttribute("auctionStatus", rsActiveAuction.getString("status"));
+                    request.setAttribute("auctionEndTime", rsActiveAuction.getTimestamp("end_time"));
+                }
+                
+                rsActiveAuction.close();
+                psActiveAuction.close();
+                rs.close();
+                ps.close();
+                ApplicationDB.closeConnection(con);
                 
                 request.setAttribute("item", item);
                 request.setAttribute("auctions", auctions);

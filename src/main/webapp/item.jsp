@@ -278,6 +278,22 @@
             <p><strong>Description:</strong> <%= item.getDescription() %></p>
             </div>
             </div>
+            
+            <%
+                Integer auctionId = (Integer) request.getAttribute("auctionId");
+                if (auctionId != null) {
+            %>
+            <div style="margin-top: 30px;">
+                <a href="Buyer_View_Auction_Page.jsp?auctionId=<%= auctionId %>" 
+                   style="display: inline-block; padding: 14px 32px; background: #6b9080; color: white; 
+                          text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem;
+                          transition: background 0.3s ease, transform 0.2s ease;"
+                   onmouseover="this.style.background='#3e6b5c'; this.style.transform='scale(1.05)';"
+                   onmouseout="this.style.background='#6b9080'; this.style.transform='scale(1)';">Place Bid</a>
+            </div>
+            <%
+                }
+            %>
         </div>
         <%
             }

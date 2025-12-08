@@ -202,7 +202,6 @@
 
         try {
             con = ApplicationDB.getConnection();
-
             int auctionIdInt = Integer.parseInt(auctionIdParam.trim());
 
             String sqlAuction =
@@ -331,6 +330,79 @@
         won the item "<%= itemTitle %>" with a bid of
         <span class="amount">$<%= winningAmount %></span>.
       </div>
+      
+      <%
+        // Check if current user is the winner and needs to pay
+        Integer sessionUserId = (Integer) session.getAttribute("user_id");
+        boolean needsPayment = false;
+        int auctionIdInt = Integer.parseInt(auctionIdParam.trim());
+        
+        if (sessionUserId != null) {
+            Connection conPay = null;
+            try {
+                conPay = ApplicationDB.getConnection();
+                
+                // Get winner's buyer_id
+                String sqlWinnerId = "SELECT b.buyer_id " +
+                                    "FROM Bid b " +
+                                    "WHERE b.auction_id = ? " +
+                                    "ORDER BY b.amount DESC, b.bid_time ASC " +
+                                    "LIMIT 1";
+                PreparedStatement psWinnerId = conPay.prepareStatement(sqlWinnerId);
+                psWinnerId.setInt(1, auctionIdInt);
+                ResultSet rsWinnerId = psWinnerId.executeQuery();
+                
+                if (rsWinnerId.next() && rsWinnerId.getInt("buyer_id") == sessionUserId) {
+                    // Check if payment already made
+                    String sqlCheckTrans = "SELECT trans_id FROM `Transaction` WHERE auction_id = ?";
+                    PreparedStatement psCheckTrans = conPay.prepareStatement(sqlCheckTrans);
+                    psCheckTrans.setInt(1, auctionIdInt);
+                    ResultSet rsCheckTrans = psCheckTrans.executeQuery();
+                    
+                    needsPayment = !rsCheckTrans.next(); // Need payment if no transaction exists
+                    
+                    rsCheckTrans.close();
+                    psCheckTrans.close();
+                }
+                
+                rsWinnerId.close();
+                psWinnerId.close();
+                conPay.close();
+            } catch (Exception ignore) {}
+        }
+        
+        if (needsPayment) {
+      %>
+        <div style="margin-top: 16px; text-align: center;">
+          <a href="payment?auctionId=<%= auctionIdInt %>" 
+             style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #667eea, #764ba2); 
+                    color: white; text-decoration: none; border-radius: 10px; font-weight: 600; 
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: all 0.3s ease;">
+            💳 Proceed to Payment
+          </a>
+        </div>
+      <% } else if (sessionUserId != null) {
+            Connection conCheck = null;
+            try {
+                conCheck = ApplicationDB.getConnection();
+                String sqlWinnerId = "SELECT b.buyer_id FROM Bid b WHERE b.auction_id = ? ORDER BY b.amount DESC, b.bid_time ASC LIMIT 1";
+                PreparedStatement psCheck = conCheck.prepareStatement(sqlWinnerId);
+                psCheck.setInt(1, auctionIdInt);
+                ResultSet rsCheck = psCheck.executeQuery();
+                
+                if (rsCheck.next() && rsCheck.getInt("buyer_id") == sessionUserId) {
+      %>
+        <div class="message success" style="margin-top: 16px; background: #d1fae5; border-color: #6ee7b7;">
+          Payment completed for this auction.
+        </div>
+      <%
+                }
+                rsCheck.close();
+                psCheck.close();
+                conCheck.close();
+            } catch (Exception ignore) {}
+        }
+      %>
     <% } %>
   <% } %>
 

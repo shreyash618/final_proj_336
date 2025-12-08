@@ -29,7 +29,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
 
             request.setAttribute("errorMessage",
                     "Auction ID and Bid Amount are required.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
             return;
         }
@@ -42,7 +42,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage",
                     "Invalid number format for auction ID or bid amount.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
             return;
         }
@@ -91,7 +91,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
             if (!rs.next()) {
                 request.setAttribute("errorMessage",
                         "Auction " + auctionId + " was not found.");
-                request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+                request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                        .forward(request, response);
                 return;
             }
@@ -104,7 +104,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
                 request.setAttribute("errorMessage",
                         "Your bid must be at least the minimum price ($"
                                 + minimumPrice + ").");
-                request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+                request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                        .forward(request, response);
                 return;
             }
@@ -115,7 +115,7 @@ public class BuyerCreateBidServlet extends HttpServlet {
                     request.setAttribute("errorMessage",
                             "Your bid must be at least current price + increment (>= $"
                                     + minAllowed + ").");
-                    request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+                    request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                            .forward(request, response);
                     return;
                 }
@@ -135,13 +135,13 @@ public class BuyerCreateBidServlet extends HttpServlet {
 
             request.setAttribute("successMessage",
                     "Your bid of $" + bidAmount + " has been placed.");
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp?auctionId=" + auctionId)
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId)
                    .forward(request, response);
 
         } catch (Exception e) {
             request.setAttribute("errorMessage",
                     "Error placing bid: " + e.getMessage());
-            request.getRequestDispatcher("Buyer_Create_Bid_Page.jsp")
+            request.getRequestDispatcher("Buyer_View_Auction_Page.jsp")
                    .forward(request, response);
         } finally {
             try { if (rs != null) rs.close(); } catch (Exception ignored) {}

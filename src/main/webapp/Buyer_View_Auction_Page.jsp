@@ -351,6 +351,98 @@
 <%
     String auctionIdParam = request.getParameter("auctionId");
     String errorMessage = null;
+    String successMsg = null;
+    
+    // Handle bid submission
+    String submitBid = request.getParameter("submitBid");
+    if ("true".equals(submitBid) && "POST".equalsIgnoreCase(request.getMethod())) {
+        String bidAmountStr = request.getParameter("bidAmount");
+        Integer sessionUserId = (Integer) session.getAttribute("user_id");
+        
+        if (sessionUserId == null) {
+            errorMessage = "You must be logged in to place a bid.";
+        } else if (bidAmountStr == null || bidAmountStr.trim().isEmpty()) {
+            errorMessage = "Bid amount is required.";
+        } else {
+            Connection conBid = null;
+            PreparedStatement psCheck = null;
+            ResultSet rsCheck = null;
+            PreparedStatement psInsert = null;
+            
+            try {
+                int auctionId = Integer.parseInt(auctionIdParam.trim());
+                java.math.BigDecimal bidAmount = new java.math.BigDecimal(bidAmountStr.trim());
+                
+                conBid = ApplicationDB.getConnection();
+                
+                // Validate bid amount
+                String checkSql = "SELECT a.minimum_price, a.starting_price, a.increment, " +
+                                 "COALESCE(MAX(b.amount), a.starting_price) AS current_price " +
+                                 "FROM Auction a " +
+                                 "LEFT JOIN Bid b ON a.auction_id = b.auction_id " +
+                                 "WHERE a.auction_id = ? " +
+                                 "GROUP BY a.minimum_price, a.starting_price, a.increment";
+                
+                psCheck = conBid.prepareStatement(checkSql);
+                psCheck.setInt(1, auctionId);
+                rsCheck = psCheck.executeQuery();
+                
+                if (rsCheck.next()) {
+                    java.math.BigDecimal minimumPrice = rsCheck.getBigDecimal("minimum_price");
+                    java.math.BigDecimal currentPrice = rsCheck.getBigDecimal("current_price");
+                    java.math.BigDecimal increment = rsCheck.getBigDecimal("increment");
+                    
+                    if (minimumPrice != null && bidAmount.compareTo(minimumPrice) < 0) {
+                        errorMessage = "Your bid must be at least the minimum price ($" + minimumPrice + ").";
+                    } else if (increment != null && increment.compareTo(java.math.BigDecimal.ZERO) > 0) {
+                        java.math.BigDecimal minAllowed = currentPrice.add(increment);
+                        if (bidAmount.compareTo(minAllowed) < 0) {
+                            errorMessage = "Your bid must be at least current price + increment (>= $" + minAllowed + ").";
+                        }
+                    }
+                    
+                    if (errorMessage == null) {
+                        // Insert bid
+                        String insertSql = "INSERT INTO Bid (auction_id, buyer_id, amount, bid_time, status) " +
+                                          "VALUES (?, ?, ?, ?, ?)";
+                        psInsert = conBid.prepareStatement(insertSql);
+                        psInsert.setInt(1, auctionId);
+                        psInsert.setInt(2, sessionUserId);
+                        psInsert.setBigDecimal(3, bidAmount);
+                        psInsert.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+                        psInsert.setString(5, "ACTIVE");
+                        psInsert.executeUpdate();
+                        
+                        // Close resources before redirect
+                        if (psInsert != null) { psInsert.close(); }
+                        if (rsCheck != null) { rsCheck.close(); }
+                        if (psCheck != null) { psCheck.close(); }
+                        if (conBid != null) { ApplicationDB.closeConnection(conBid); }
+                        
+                        // Redirect to avoid duplicate submissions and refresh bid history
+                        response.sendRedirect("Buyer_View_Auction_Page.jsp?auctionId=" + auctionId + "&bidSuccess=true");
+                        return;
+                    }
+                } else {
+                    errorMessage = "Auction not found.";
+                }
+                
+            } catch (Exception e) {
+                errorMessage = "Error placing bid: " + e.getMessage();
+            } finally {
+                // Ensure all resources are closed
+                try { if (psInsert != null) psInsert.close(); } catch (Exception ignore) {}
+                try { if (rsCheck != null) rsCheck.close(); } catch (Exception ignore) {}
+                try { if (psCheck != null) psCheck.close(); } catch (Exception ignore) {}
+                try { if (conBid != null) ApplicationDB.closeConnection(conBid); } catch (Exception ignore) {}
+            }
+        }
+    }
+    
+    // Check for success message from redirect
+    if ("true".equals(request.getParameter("bidSuccess"))) {
+        successMsg = "Your bid has been placed successfully!";
+    }
 
     Map<String, Object> auctionInfo = null;
     java.util.List<Map<String, Object>> bidHistory = new ArrayList<>();
@@ -476,6 +568,7 @@
 
 <div class="page-wrapper">
   <div class="left">
+    <% if (auctionIdParam == null || auctionIdParam.isEmpty()) { %>
     <h1>View Auction</h1>
     
     <% if (auctionInfo != null && errorMessage == null) { %>
@@ -520,9 +613,44 @@
 
       <button type="submit" class="submit-button">Load Auction</button>
     </form>
+    <% } else { %>
+    <h1>Auction #<%= auctionIdParam %></h1>
+    <p class="subtitle">View auction details and place your bid below.</p>
+    
+    <% if (auctionInfo != null && errorMessage == null) { %>
+      <div class="item-preview-image" style="margin-bottom: 20px;">
+        <%
+          String imagePath = (String) auctionInfo.get("image_path");
+          if (imagePath == null || imagePath.isEmpty()) {
+            // Default image based on category
+            Integer categoryId = (Integer) auctionInfo.get("category_id");
+            if (categoryId != null) {
+              if (categoryId == 1) {
+                imagePath = "Images/item_photos/z_stock/stock_phone.jpg";
+              } else if (categoryId == 2) {
+                imagePath = "Images/item_photos/z_stock/stock_tv.png";
+              } else if (categoryId == 3) {
+                imagePath = "Images/item_photos/z_stock/stock_headphones.jpg";
+              } else {
+                imagePath = "Images/item_photos/z_stock/stock_phone.jpg"; // fallback
+              }
+            } else {
+              imagePath = "Images/item_photos/z_stock/stock_phone.jpg"; // fallback
+            }
+          }
+        %>
+        <img src="<%= imagePath %>" alt="<%= auctionInfo.get("title") %>">
+      </div>
+      <div class="divider-line"></div>
+    <% } %>
+    <% } %>
 
     <% if (errorMessage != null) { %>
       <div class="message error"><%= errorMessage %></div>
+    <% } %>
+    
+    <% if (successMsg != null) { %>
+      <div class="message success"><%= successMsg %></div>
     <% } %>
 
     <a class="back-link" href="welcome.jsp">Back to Home</a>
@@ -572,6 +700,35 @@
         </p>
       </div>
 
+      <div class="section-title">Place Your Bid</div>
+      <div class="info-box">
+        <% if ("ACTIVE".equalsIgnoreCase(String.valueOf(auctionInfo.get("status")))) { %>
+          <form method="post" action="Buyer_View_Auction_Page.jsp">
+            <input type="hidden" name="auctionId" value="<%= auctionIdParam %>" />
+            <input type="hidden" name="submitBid" value="true" />
+            
+            <label for="bidAmount">Bid Amount ($)</label>
+            <input type="number" 
+                   id="bidAmount" 
+                   name="bidAmount" 
+                   class="form-input"
+                   min="<%= auctionInfo.get("starting_price") %>"
+                   step="<%= auctionInfo.get("increment") %>"
+                   placeholder="Enter your bid amount"
+                   required />
+            
+            <p class="small-muted">
+              Minimum bid: $<%= auctionInfo.get("starting_price") %> · 
+              Increment: $<%= auctionInfo.get("increment") %>
+            </p>
+            
+            <button type="submit" class="submit-button">Place Bid</button>
+          </form>
+        <% } else { %>
+          <p class="small-muted">This auction is <%= auctionInfo.get("status") %> and not accepting bids.</p>
+        <% } %>
+      </div>
+
       <div class="section-title">Bid History</div>
       <div class="info-box">
         <% if (bidHistory.isEmpty()) { %>
@@ -618,7 +775,7 @@
         <% } %>
       </div>
     <% } else { %>
-      <p class="small-muted">Enter an auction ID on the left and click “Load Auction”.</p>
+      <p class="small-muted">Enter an auction ID on the left and click "Load Auction".</p>
     <% } %>
   </div>
 </div>
