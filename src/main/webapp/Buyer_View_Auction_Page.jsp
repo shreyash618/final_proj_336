@@ -654,14 +654,39 @@
       <div class="message success"><%= successMsg %></div>
     <% } %>
 
-    <a class="back-link" href="welcome.jsp">Back to Home</a>
-    
     <% if (auctionInfo != null && errorMessage == null) { %>
-      <a class="back-link" href="Buyer_Create_Bid_Page.jsp?auctionId=<%= auctionInfo.get("auction_id") %>" 
-         style="display: block; margin-top: 8px;">
-        Create New Bid
-      </a>
+      <div class="section-title" style="margin-top: 28px; margin-bottom: 16px;">Place Your Bid</div>
+      <div class="info-box" style="padding: 24px 20px; margin-bottom: 32px;">
+        <% if ("ACTIVE".equalsIgnoreCase(String.valueOf(auctionInfo.get("status")))) { %>
+          <form method="post" action="Buyer_View_Auction_Page.jsp">
+            <input type="hidden" name="auctionId" value="<%= auctionIdParam %>" />
+            <input type="hidden" name="submitBid" value="true" />
+            
+            <label for="bidAmount" style="margin-top: 0; margin-bottom: 10px;">Bid Amount ($)</label>
+            <input type="number" 
+                   id="bidAmount" 
+                   name="bidAmount" 
+                   class="form-input"
+                   min="<%= auctionInfo.get("starting_price") %>"
+                   step="<%= auctionInfo.get("increment") %>"
+                   placeholder="Enter your bid amount"
+                   required 
+                   style="margin-bottom: 20px; margin-top: 0;" />
+            
+            <p class="small-muted" style="margin-bottom: 24px; margin-top: 0;">
+              Minimum bid: $<%= auctionInfo.get("starting_price") %> · 
+              Increment: $<%= auctionInfo.get("increment") %>
+            </p>
+            
+            <button type="submit" class="submit-button" style="margin-top: 4px;">Place Bid</button>
+          </form>
+        <% } else { %>
+          <p class="small-muted">This auction is <%= auctionInfo.get("status") %> and not accepting bids.</p>
+        <% } %>
+      </div>
     <% } %>
+
+    <a class="back-link" href="welcome.jsp" style="margin-top: 16px; display: block;">Back to Home</a>
   </div>
 
   <div class="right">
@@ -699,35 +724,6 @@
         <p class="small-muted">
           Starts: <%= auctionInfo.get("start_time") %> · Ends: <%= auctionInfo.get("end_time") %>
         </p>
-      </div>
-
-      <div class="section-title">Place Your Bid</div>
-      <div class="info-box">
-        <% if ("ACTIVE".equalsIgnoreCase(String.valueOf(auctionInfo.get("status")))) { %>
-          <form method="post" action="Buyer_View_Auction_Page.jsp">
-            <input type="hidden" name="auctionId" value="<%= auctionIdParam %>" />
-            <input type="hidden" name="submitBid" value="true" />
-            
-            <label for="bidAmount">Bid Amount ($)</label>
-            <input type="number" 
-                   id="bidAmount" 
-                   name="bidAmount" 
-                   class="form-input"
-                   min="<%= auctionInfo.get("starting_price") %>"
-                   step="<%= auctionInfo.get("increment") %>"
-                   placeholder="Enter your bid amount"
-                   required />
-            
-            <p class="small-muted">
-              Minimum bid: $<%= auctionInfo.get("starting_price") %> · 
-              Increment: $<%= auctionInfo.get("increment") %>
-            </p>
-            
-            <button type="submit" class="submit-button">Place Bid</button>
-          </form>
-        <% } else { %>
-          <p class="small-muted">This auction is <%= auctionInfo.get("status") %> and not accepting bids.</p>
-        <% } %>
       </div>
 
       <div class="section-title">Bid History</div>
