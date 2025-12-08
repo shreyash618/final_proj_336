@@ -8,39 +8,59 @@ import java.util.*;
 public class ReportDAO {
 
     public static double totalEarnings() {
-        String sql = "SELECT COALESCE(SUM(t.amount),0) as total FROM `Transaction` t";
-        // Note: your Transaction table doesn't have amount column in the schema. Try to sum winning bids as fallback.
+        // Sum winning bids for completed auctions (CLOSED or CLOSED_SOLD)
+        String sql = "SELECT COALESCE(SUM(winning_bid), 0) AS total " +
+                "FROM ( " +
+                "    SELECT a.auction_id, " +
+                "           (SELECT b.amount FROM Bid b " +
+                "            WHERE b.auction_id = a.auction_id " +
+                "            ORDER BY b.amount DESC, b.bid_time ASC LIMIT 1) AS winning_bid " +
+                "    FROM Auction a " +
+                "    WHERE (a.status = 'CLOSED' OR a.status = 'CLOSED_SOLD') " +
+                "      AND a.auction_id IN (SELECT auction_id FROM Bid) " +
+                ") AS sales";
+        
         try (Connection c = ApplicationDB.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             if (rs.next()) return rs.getDouble("total");
-        } catch (SQLException e) { /* ignore */ }
-
-        // fallback: sum highest bid per closed auction
-        String sql2 = "SELECT COALESCE(SUM(x.max_bid),0) AS total FROM ( " +
-                "SELECT a.auction_id, MAX(b.amount) AS max_bid " +
-                "FROM Auction a JOIN Bid b ON a.auction_id = b.auction_id " +
-                "WHERE a.status = 'closed' GROUP BY a.auction_id) x";
-        try (Connection c = ApplicationDB.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql2);
-             ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) return rs.getDouble("total");
-        } catch (SQLException e) { e.printStackTrace(); }
+        } catch (SQLException e) { 
+            e.printStackTrace(); 
+        }
         return 0.0;
     }
 
     public static List<Map<String,Object>> earningsByItem() {
-        String sql = "SELECT i.item_id, i.title, COALESCE(SUM(b.amount),0) AS earnings " +
-                "FROM Auction a JOIN Item i ON a.item_id = i.item_id " +
-                "LEFT JOIN Bid b ON b.auction_id = a.auction_id " +
-                "WHERE a.status = 'closed' GROUP BY i.item_id, i.title ORDER BY earnings DESC";
+        // Get winning bid amount per item for closed auctions only
+        String sql = "SELECT i.item_id, i.title, i.brand, " +
+                "       COALESCE(SUM( " +
+                "           (SELECT b.amount FROM Bid b " +
+                "            WHERE b.auction_id = a.auction_id " +
+                "            ORDER BY b.amount DESC, b.bid_time ASC LIMIT 1) " +
+                "       ), 0) AS earnings " +
+                "FROM Item i " +
+                "JOIN Auction a ON i.item_id = a.item_id " +
+                "WHERE (a.status = 'CLOSED' OR a.status = 'CLOSED_SOLD') " +
+                "  AND a.auction_id IN (SELECT auction_id FROM Bid) " +
+                "GROUP BY i.item_id, i.title, i.brand " +
+                "ORDER BY earnings DESC";
         return runList(sql);
     }
 
     public static List<Map<String,Object>> earningsBySeller() {
-        String sql = "SELECT u.user_id, CONCAT(u.first_name,' ',u.last_name) AS seller, COALESCE(SUM(b.amount),0) AS earnings " +
-                "FROM Auction a JOIN `User` u ON a.seller_id = u.user_id LEFT JOIN Bid b ON b.auction_id = a.auction_id " +
-                "WHERE a.status='closed' GROUP BY u.user_id, seller ORDER BY earnings DESC";
+        // Get total winning bid amounts per seller for closed auctions only
+        String sql = "SELECT u.user_id, CONCAT(u.first_name, ' ', u.last_name) AS seller, " +
+                "       COALESCE(SUM( " +
+                "           (SELECT b.amount FROM Bid b " +
+                "            WHERE b.auction_id = a.auction_id " +
+                "            ORDER BY b.amount DESC, b.bid_time ASC LIMIT 1) " +
+                "       ), 0) AS earnings " +
+                "FROM `User` u " +
+                "JOIN Auction a ON u.user_id = a.seller_id " +
+                "WHERE (a.status = 'CLOSED' OR a.status = 'CLOSED_SOLD') " +
+                "  AND a.auction_id IN (SELECT auction_id FROM Bid) " +
+                "GROUP BY u.user_id, u.first_name, u.last_name " +
+                "ORDER BY earnings DESC";
         return runList(sql);
     }
 
