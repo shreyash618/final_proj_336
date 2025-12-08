@@ -200,7 +200,7 @@
         ResultSet rsWinner = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName("com.mysql.jdbc.Driver");
 
             String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
             String user = "root";
