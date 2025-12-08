@@ -116,7 +116,7 @@
             <li><a href="search">Search</a></li>
             <li><a href="faq">FAQs</a></li>
             <li><a href="alert.jsp"><img src="Images/icons/notification_icon.png"/></a></li>
-            <li><a href="account.jsp">My Account</a></li>
+            <li><a href="User_Account_Info_Page.jsp">My Account</a></li>
         </ul>
 
         <a href="logout" class="logout-btn">Logout</a>
