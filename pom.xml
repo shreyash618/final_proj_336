@@ -22,14 +22,11 @@
             <version>4.0.1</version>
             <scope>provided</scope>
         </dependency>
-        <!-- MySQL connector removed - using JAR file from WEB-INF/lib instead -->
-        <!--
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
-        -->
     </dependencies>
 
     <build>
@@ -49,7 +46,7 @@
                 <version>3.3.1</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <packagingIncludes>WEB-INF/**,META-INF/**,**/*.jsp,**/*.html,**/*.css,**/*.js,**/*.jpg</packagingIncludes>
+                    <packagingIncludes>WEB-INF/**,META-INF/**,**/*.jsp,**/*.html,**/*.css,**/*.js,**/*.jpg,**/*.jpeg,**/*.png,**/*.avif</packagingIncludes>
                 </configuration>
             </plugin>
         </plugins>
