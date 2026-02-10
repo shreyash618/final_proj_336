@@ -4,7 +4,6 @@ import com.techbarn.webapp.ApplicationDB;
 import com.techbarn.webapp.model.Question;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +49,17 @@ public class QuestionDAO {
         return out;
     }
 
+    public static List<Question> getOpen() {
+        List<Question> out = new ArrayList<>();
+        String sql = "SELECT * FROM Question WHERE reply IS NULL OR reply = '' ORDER BY date_asked DESC";
+        try (Connection c = ApplicationDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) out.add(map(rs));
+        } catch (Exception e) { e.printStackTrace(); }
+        return out;
+    }
+
     public static List<Question> getAllQuestions() {
         List<Question> out = new ArrayList<>();
         String sql = "SELECT * FROM Question ORDER BY date_asked DESC";
@@ -61,7 +71,8 @@ public class QuestionDAO {
         return out;
     }
 
-    public static void askQuestion(int userId, String title, String contents) {
+    /** @throws SQLException if insert fails (e.g. column size, constraint) */
+    public static void askQuestion(int userId, String title, String contents) throws SQLException {
         String sql = "INSERT INTO Question (title, contents, status, date_asked, user_id) VALUES (?, ?, 'open', NOW(), ?)";
         try (Connection c = ApplicationDB.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -69,7 +80,19 @@ public class QuestionDAO {
             ps.setString(2, contents);
             ps.setInt(3, userId);
             ps.executeUpdate();
+        }
+    }
+
+    public static List<Question> getQuestionsByUserId(int userId) {
+        List<Question> out = new ArrayList<>();
+        String sql = "SELECT * FROM Question WHERE user_id = ? ORDER BY date_asked DESC";
+        try (Connection c = ApplicationDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) out.add(map(rs));
         } catch (Exception e) { e.printStackTrace(); }
+        return out;
     }
 
     public static Question getById(int id) {

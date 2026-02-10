@@ -597,18 +597,20 @@
 </div>
 <div class ="page-container">
 <div class="faq-container">
-
-    <% if (isRepOrAdmin) { %>
-    <!-- Filter Section for Reps/Admins -->
+    <% if (request.getAttribute("errorMessage") != null) { %>
+    <div style="padding:12px;margin-bottom:16px;background:#fef2f2;color:#b91c1c;border-radius:8px;border:1px solid #fecaca;">
+        <%= request.getAttribute("errorMessage") %>
+    </div>
+    <% } %>
+    <!-- Filter by status - everyone can use -->
     <div class="filter-section">
         <div class="filter-label">Filter by Status:</div>
         <div class="filter-buttons">
-            <a href="<%=request.getContextPath()%>/faq" class="filter-btn <%=request.getParameter("status") == null ? "active" : ""%>">All Questions</a>
+            <a href="<%=request.getContextPath()%>/faq" class="filter-btn <%=request.getParameter("status") == null ? "active" : ""%>">All</a>
             <a href="<%=request.getContextPath()%>/faq?status=answered" class="filter-btn <%="answered".equals(request.getParameter("status")) ? "active" : ""%>">Answered</a>
-            <a href="<%=request.getContextPath()%>/faq?status=open" class="filter-btn <%="open".equals(request.getParameter("status")) ? "active" : ""%>">Open</a>
+            <a href="<%=request.getContextPath()%>/faq?status=open" class="filter-btn <%="open".equals(request.getParameter("status")) ? "active" : ""%>">Unanswered</a>
         </div>
     </div>
-    <% } %>
 
     <!-- Ask a Question Section - Only for regular users -->
     <% if (!isRepOrAdmin) { %>
@@ -636,7 +638,7 @@
     
     <!-- Questions List Section -->
     <div class="questions-section">
-        <h2><%=isRepOrAdmin ? "All Questions" : "Answered Questions"%></h2>
+        <h2>Questions</h2>
         
         <div class="questions-list">
             <% 

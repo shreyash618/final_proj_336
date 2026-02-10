@@ -24,26 +24,17 @@ public class FaqServlet extends HttpServlet {
         List<Question> list;
         if (q != null && !q.trim().isEmpty()) {
             list = QuestionDAO.searchByKeyword(q.trim());
-            // Apply status filter to search results
-            if (isRepOrAdmin && statusFilter != null) {
+            if (statusFilter != null) {
                 list = filterByStatus(list, statusFilter);
-            } else if (!isRepOrAdmin) {
-                // Regular users should only see answered questions even in search
-                list = filterByStatus(list, "answered");
             }
         } else {
-            if (isRepOrAdmin) {
-                // Reps/admins can filter by status
-                if ("answered".equals(statusFilter)) {
-                    list = QuestionDAO.getAnswered();
-                } else if ("open".equals(statusFilter)) {
-                    list = getOpenQuestions(QuestionDAO.getAllQuestions());
-                } else {
-                    list = QuestionDAO.getAllQuestions(); // default: show all
-                }
-            } else {
-                // Regular users only see answered questions
+            // Everyone sees all questions; filter by status when selected
+            if ("answered".equals(statusFilter)) {
                 list = QuestionDAO.getAnswered();
+            } else if ("open".equals(statusFilter)) {
+                list = QuestionDAO.getOpen();
+            } else {
+                list = QuestionDAO.getAllQuestions();
             }
         }
         req.setAttribute("questions", list);
@@ -92,7 +83,17 @@ public class FaqServlet extends HttpServlet {
             doGet(req, resp);
             return;
         }
-        QuestionDAO.askQuestion(userId, title.trim(), contents != null ? contents.trim() : "");
-        resp.sendRedirect(req.getContextPath() + "/faq");
+        try {
+            QuestionDAO.askQuestion(userId, title.trim(), contents != null ? contents.trim() : "");
+            resp.sendRedirect(req.getContextPath() + "/faq");
+        } catch (Exception e) {
+            e.printStackTrace();
+            req.setAttribute("errorMessage", "Failed to save question. Try a shorter title. If it persists, the database may need the column fix in sql/alter_question_columns.sql.");
+            try {
+                doGet(req, resp);
+            } catch (Exception ex) {
+                throw new ServletException(ex);
+            }
+        }
     }
 }

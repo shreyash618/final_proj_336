@@ -378,12 +378,12 @@ DROP TABLE IF EXISTS `Question`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `Question` (
   `question_id` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(20) NOT NULL,
-  `contents` varchar(50) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `contents` varchar(2000) NOT NULL,
   `status` varchar(20) NOT NULL,
   `date_asked` datetime NOT NULL,
   `user_id` int NOT NULL,
-  `reply` varchar(100) DEFAULT NULL,
+  `reply` varchar(2000) DEFAULT NULL,
   `rep_id` int DEFAULT NULL,
   PRIMARY KEY (`question_id`),
   KEY `fk_question_user` (`user_id`),

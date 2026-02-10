@@ -69,6 +69,7 @@ Your app will be at `https://<your-service>.up.railway.app`.
 | DB connection refused | Ensure both MySQL and web service are in the same Railway project. |
 | Access denied | Double-check `MYSQLUSER` and `MYSQLPASSWORD` from the MySQL Variables tab. |
 | Tables missing | Run `sql/updated_schema_seed.sql` against the `railway` database. |
+| Questions not saving | Run `sql/alter_question_columns.sql` to widen title/contents columns. |
 
 ---
 
