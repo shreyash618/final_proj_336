@@ -40,17 +40,16 @@ public class SearchServlet extends HttpServlet{
     private ArrayList<String> getFilterCategories(){
         ArrayList<String> categories = new ArrayList<>();
         try{
-            //Get the database connection
             Connection con = ApplicationDB.getConnection();
+            String schema = getSchemaName(con);
 
-            /* code below used to initialize the sidebar filter  */
-            /* get the list of filter categories */
             String query ="SELECT COLUMN_NAME "+
             "FROM INFORMATION_SCHEMA.COLUMNS "+
-            "WHERE TABLE_SCHEMA='tech_barn' AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
+            "WHERE TABLE_SCHEMA=? AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') "+
             "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') "+
             "ORDER BY ORDINAL_POSITION";
             PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, schema);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -69,16 +68,27 @@ public class SearchServlet extends HttpServlet{
         }
     }
 
+    private String getSchemaName(Connection con) {
+        try {
+            String catalog = con.getCatalog();
+            if (catalog != null && !catalog.isEmpty()) return catalog;
+        } catch (Exception ignored) { }
+        String env = System.getenv("MYSQLDATABASE");
+        if (env == null) env = System.getenv("MYSQL_DATABASE");
+        return (env != null && !env.isEmpty()) ? env : "tech_barn";
+    }
+
     private Map<String, List<String>> getFilterColumnsByTable() {
         Map<String, List<String>> tableColumns = new HashMap<>();
     
         try {
             Connection con = ApplicationDB.getConnection();
+            String schema = getSchemaName(con);
     
             String query =
                 "SELECT TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION " +
                 "FROM INFORMATION_SCHEMA.COLUMNS " +
-                "WHERE TABLE_SCHEMA='tech_barn' " +
+                "WHERE TABLE_SCHEMA=? " +
                 "AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') " +
                 "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'title', 'description', 'in_stock') " +
                 "ORDER BY CASE TABLE_NAME " +
@@ -89,6 +99,7 @@ public class SearchServlet extends HttpServlet{
                 "   ELSE 5 END, ORDINAL_POSITION";
     
             PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, schema);
             ResultSet rs = ps.executeQuery();
     
             while (rs.next()) {
@@ -173,15 +184,17 @@ public class SearchServlet extends HttpServlet{
     
         try {
             Connection con = ApplicationDB.getConnection();
+            String schema = getSchemaName(con);
     
             String sql =
                 "SELECT COLUMN_NAME, DATA_TYPE " +
                 "FROM INFORMATION_SCHEMA.COLUMNS " +
-                "WHERE TABLE_SCHEMA='tech_barn' " +
+                "WHERE TABLE_SCHEMA=? " +
                 "AND TABLE_NAME IN ('Item', 'Phone', 'TV', 'Headphones') " +
                 "AND COLUMN_NAME NOT IN ('item_id', 'image_path', 'in_stock')";
     
             PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, schema);
             ResultSet rs = ps.executeQuery();
     
             while (rs.next()) {

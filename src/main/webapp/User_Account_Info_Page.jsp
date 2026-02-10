@@ -314,12 +314,7 @@
                 PreparedStatement psLogin = null;
                 ResultSet rsLogin = null;
                 try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                    String user = "root";
-                    String pass = "password123";
-
-                    conLogin = DriverManager.getConnection(url, user, pass);
+                    conLogin = ApplicationDB.getConnection();
 
                     String sqlLogin =
                         "SELECT user_id FROM `User` WHERE username = ? AND password = ?";

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
+<%@ page import="com.techbarn.webapp.ApplicationDB" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -259,12 +260,7 @@
                 PreparedStatement psLogin = null;
                 ResultSet rsLogin = null;
                 try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                    String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                    String user = "root";
-                    String pass = "password123";
-
-                    conLogin = DriverManager.getConnection(url, user, pass);
+                    conLogin = ApplicationDB.getConnection();
 
                     String sqlLogin =
                         "SELECT user_id FROM `User` WHERE username = ? AND password = ?";
@@ -297,12 +293,7 @@
             PreparedStatement psDel = null;
 
             try {
-                Class.forName("com.mysql.jdbc.Driver");
-                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                String user = "root";
-                String pass = "password123";
-
-                con = DriverManager.getConnection(url, user, pass);
+                con = ApplicationDB.getConnection();
 
                 String sqlDel = "DELETE FROM `User` WHERE user_id = ?";
                 psDel = con.prepareStatement(sqlDel);
@@ -344,12 +335,7 @@
             ResultSet rs = null;
 
             try {
-                Class.forName("com.mysql.jdbc.Driver");
-                String url  = "jdbc:mysql://localhost:3306/tech_barn?useUnicode=true&useSSL=false";
-                String user = "root";
-                String pass = "password123";
-
-                con = DriverManager.getConnection(url, user, pass);
+                con = ApplicationDB.getConnection();
 
                 String sql =
                     "SELECT u.user_id, u.username, u.first_name, u.last_name, " +
